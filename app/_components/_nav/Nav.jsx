@@ -28,7 +28,7 @@ const Nav = () => {
       path: "/dashboard/pending-orders",
     },
     {
-      navitem: "Confirm Order",
+      navitem: "Accepted Orders",
       icon: <GiConfirmed />,
       path: "/dashboard/confirm-orders",
     },
@@ -69,7 +69,9 @@ const Nav = () => {
     <nav className="h-[100vh]  py-[10px] sticky left-0 top-0 shadow-md inline-block  px-[10px] justify-between bg-p-yellow">
       {isScrolled && (
         <div className="absolute top-[10px] right-[-260px] text-xl md:text-2xl text-p-red font-semibold mt-1 uppercase w-[250px] text-primary-main-blue">
-          {pathname === "/dashboard" ? "Dashboard" : pathname.slice(11,pathname.length)}
+          {pathname === "/dashboard"
+            ? "Dashboard"
+            : pathname.slice(11, pathname.length)}
         </div>
       )}
       <div className="flex flex-col gap-y-5">
@@ -87,7 +89,11 @@ const Nav = () => {
         </div>
         <ul className="flex flex-col gap-y-2">
           {navdata.map((item, index) => (
-            <li className="w-[70px]  md:w-[250px]" title={item.navitem}>
+            <li
+              key={index}
+              className="w-[70px]  md:w-[250px]"
+              title={item.navitem}
+            >
               {" "}
               <Link
                 href={item.path}
@@ -95,7 +101,7 @@ const Nav = () => {
                   pathname === item.path
                     ? "bg-p-red text-white"
                     : "text-p-brown shadow-inner"
-                } w-full py-[10px] text-center   gap-x-1  rounded-lg flex items-center justify-center duration-200 hover:bg-p-red hover:text-white` }
+                } w-full py-[10px] text-center   gap-x-1  rounded-lg flex items-center justify-center duration-200 hover:bg-p-red hover:text-white`}
               >
                 {item.icon}{" "}
                 <span className="hidden md:block">{item.navitem}</span>

@@ -1,8 +1,22 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import CommonButton from "./_components/_common-button/CommonButton";
 import logo from "./_svg/logo.svg";
+import {  useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+
 const page = () => {
+  let data = useSelector((state) => state);
+
+  let router = useRouter();
+  // check that admin is login or not
+  useEffect(() => {
+    if (data.userData.userInfo) {
+      router.push("/dashboard");
+    }
+  }, []);
+
   return (
     <div className=" w-full h-[100vh] bg-p-yellow">
       <div
