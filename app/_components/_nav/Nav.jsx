@@ -12,7 +12,6 @@ import { MdRestaurantMenu } from "react-icons/md";
 import { RiAddBoxLine } from "react-icons/ri";
 import { FaUsers } from "react-icons/fa";
 
-
 const Nav = () => {
   const pathname = usePathname();
 
@@ -32,11 +31,7 @@ const Nav = () => {
       icon: <GiConfirmed />,
       path: "/dashboard/confirm-orders",
     },
-    {
-      navitem: "Menu",
-      icon: <MdRestaurantMenu />,
-      path: "/dashboard/menu",
-    },
+
     {
       navitem: "Add Menu",
       icon: <RiAddBoxLine />,
@@ -66,9 +61,9 @@ const Nav = () => {
   }, []); // Empty dependency array means this effect runs once after the initial render
 
   return (
-    <nav className="h-[100vh]  py-[10px] sticky left-0 top-0 shadow-md inline-block  px-[10px] justify-between bg-p-yellow">
-      {isScrolled && (
-        <div className="absolute top-[10px] right-[-260px] text-xl md:text-2xl text-p-red font-semibold mt-1 uppercase w-[250px] text-primary-main-blue">
+    <nav className="h-[100vh] z-[999999]  py-[10px] sticky left-0 top-0 shadow-md inline-block  px-[10px] justify-between bg-p-yellow">
+      {(
+        <div className="absolute top-[10px] right-[-360px] text-xl md:text-2xl text-p-red font-semibold mt-1 uppercase w-[350px] text-primary-main-blue">
           {pathname === "/dashboard"
             ? "Dashboard"
             : pathname.slice(11, pathname.length)}
@@ -98,7 +93,7 @@ const Nav = () => {
               <Link
                 href={item.path}
                 className={`${
-                  pathname === item.path
+                  pathname === item.path 
                     ? "bg-p-red text-white"
                     : "text-p-brown shadow-inner"
                 } w-full py-[10px] text-center   gap-x-1  rounded-lg flex items-center justify-center duration-200 hover:bg-p-red hover:text-white`}
