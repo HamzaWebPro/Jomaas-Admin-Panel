@@ -13,6 +13,9 @@ const { Option } = Select;
 
 const PizzaForm = () => {
   let data = useSelector((state) => state);
+  let [branch, setBracnh] = useState(
+    data.userData.userInfo && data.userData.userInfo.branchName
+  );
   const [pizzaData, setPizzaData] = useState({
     name: "",
     description: "",
@@ -227,7 +230,7 @@ const PizzaForm = () => {
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
           {allPizza.map(
             (item, index) =>
-              item.branch === data.userData.userInfo.branchName && (
+              item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
                   <h3 className="text-[20px] font-bold text-p-red">
