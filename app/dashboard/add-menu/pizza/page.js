@@ -6,11 +6,13 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonButton from "@/app/_components/_common-button/CommonButton";
 import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 
 const { Option } = Select;
 
 const PizzaForm = () => {
+  let data = useSelector((state) => state);
   const [pizzaData, setPizzaData] = useState({
     name: "",
     description: "",
@@ -22,7 +24,10 @@ const PizzaForm = () => {
       large: "",
       extralarge: "",
     },
-    branch: JSON.parse(Cookies.get("adminData")).branchName,
+    // branch: Cookies.get("adminData")
+    //   ? JSON.parse(Cookies.get("adminData")).branchName
+    //   : "",
+    branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
@@ -44,7 +49,10 @@ const PizzaForm = () => {
 
     // Send data to the backend using Axios
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/pizza", pizzaData)
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/pizza",
+        pizzaData
+      )
       .then((res) => {
         if (res.data.message === "Your Pizza Item Successfully Created!!") {
           location.reload();
@@ -60,7 +68,10 @@ const PizzaForm = () => {
               large: "",
               extralarge: "",
             },
-            branch: JSON.parse(Cookies.get("adminData")).branchName,
+            // branch: Cookies.get("adminData")
+            //   ? JSON.parse(Cookies.get("adminData")).branchName
+            //   : "",
+            branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
@@ -86,9 +97,11 @@ const PizzaForm = () => {
   //   get all pizza
   let [allPizza, setAllPizza] = useState([]);
   useEffect(() => {
-    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpizza").then((res) => {
-      setAllPizza(res.data);
-    });
+    axios
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpizza")
+      .then((res) => {
+        setAllPizza(res.data);
+      });
   }, []);
 
   //   topping array
@@ -214,8 +227,7 @@ const PizzaForm = () => {
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
           {allPizza.map(
             (item, index) =>
-              item.branch ===
-                JSON.parse(Cookies.get("adminData")).branchName && (
+              item.branch === data.userData.userInfo.branchName && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
                   <h3 className="text-[20px] font-bold text-p-red">
