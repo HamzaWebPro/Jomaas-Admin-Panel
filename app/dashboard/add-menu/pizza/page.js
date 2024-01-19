@@ -8,6 +8,7 @@ import CommonButton from "@/app/_components/_common-button/CommonButton";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
+import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
@@ -16,6 +17,7 @@ const PizzaForm = () => {
   let [branch, setBracnh] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
+  let [updateButton, setUpdateButton] = useState(false);
   const [pizzaData, setPizzaData] = useState({
     name: "",
     description: "",
@@ -34,10 +36,12 @@ const PizzaForm = () => {
   });
 
   const handleChange = (value, field) => {
+    setUpdateButton(true);
     setPizzaData({ ...pizzaData, [field]: value });
   };
 
   const handlePriceChange = (value, size) => {
+    setUpdateButton(true);
     setPizzaData({
       ...pizzaData,
       prices: {
@@ -152,12 +156,105 @@ const PizzaForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
+  // edit functionalities
+  let [edit, setEdit] = useState(false);
+  let [editID, setEditID] = useState("");
+  let [editItem, setEditItem] = useState();
+  let handleEdit = (item, index) => {
+    setUpdateButton(false);
+    setEdit(true);
+    setEditID(item._id);
+    setEditItem(index);
+
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    setPizzaData({
+      name: item.name,
+      description: item.description,
+      image: item.image,
+      toppings: item.toppings,
+      prices: {
+        small: item.prices.small,
+        medium: item.prices.medium,
+        large: item.prices.large,
+        extralarge: item.prices.extralarge,
+      },
+    });
+  };
+
+  let handleCancelEdit = () => {
+    setUpdateButton(false);
+    setEdit(false);
+    setEditID("");
+    setEditItem("");
+    setPizzaData({
+      name: "",
+      description: "",
+      image: "",
+      toppings: [],
+      prices: {
+        small: "",
+        medium: "",
+        large: "",
+        extralarge: "",
+      },
+      // branch: Cookies.get("adminData")
+      //   ? JSON.parse(Cookies.get("adminData")).branchName
+      //   : "",
+      branch: data.userData.userInfo && data.userData.userInfo.branchName,
+    });
+  };
+
+  // update the pizza data from database
+  let handleUpdate = () => {
+    axios
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatepizza", {
+        id: editID,
+        updatedPizza: pizzaData,
+      })
+      .then((res) => {
+        if (res.data.message === "Your Pizza Item Successfully Updated!!") {
+          location.reload();
+          toast.success(res.data.message);
+          setPizzaData({
+            name: "",
+            description: "",
+            image: "",
+            toppings: [],
+            prices: {
+              small: "",
+              medium: "",
+              large: "",
+              extralarge: "",
+            },
+            // branch: Cookies.get("adminData")
+            //   ? JSON.parse(Cookies.get("adminData")).branchName
+            //   : "",
+            branch: data.userData.userInfo && data.userData.userInfo.branchName,
+          });
+        } else {
+          toast.error(res.data.message);
+        }
+        // Clear all fields after submission
+      })
+      .catch((error) => {
+        console.error("Error adding pizza:", error);
+        toast.error("Error adding pizza. Please try again.");
+      });
+  };
   return (
     <div className="w-full flex flex-col gap-5 mx-auto mt-10">
       <ToastContainer />
-      <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-        Add your pizza items
-      </h3>
+      {editItem ? (
+        <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
+          Update your pizza item NO. {editItem + 1}
+        </h3>
+      ) : (
+        <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
+          Add your pizza items
+        </h3>
+      )}
       <Input
         placeholder="Pizza Name"
         value={pizzaData.name}
@@ -219,9 +316,16 @@ const PizzaForm = () => {
       </div>
 
       <div className="flex justify-center">
-        <CommonButton title={"Submit"} onClick={handleSubmit}>
-          Upload Pizza
-        </CommonButton>
+        {edit ? (
+          <div className="flex gap-3">
+            {updateButton && (
+              <CommonButton title={"Update"} onClick={handleUpdate} />
+            )}
+            <CommonButton title={"Cancel Edit"} onClick={handleCancelEdit} />
+          </div>
+        ) : (
+          <CommonButton title={"Submit"} onClick={handleSubmit} />
+        )}
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
@@ -281,15 +385,29 @@ const PizzaForm = () => {
                     </small>
                   </div>
                   <div className="flex justify-center gap-3 mt-5">
-                    <div className="p-2 rounded-xl text-white cursor-pointer bg-green-700">
-                      Edit
-                    </div>
-                    <div
-                      onClick={() => handleDelete(item._id)}
-                      className="p-2 rounded-xl text-white cursor-pointer bg-red-500"
-                    >
-                      Delete
-                    </div>
+                    {edit && item._id === editID ? (
+                      <InfinitySpin
+                        visible={true}
+                        width="200"
+                        color="#005B89"
+                        ariaLabel="infinity-spin-loading"
+                      />
+                    ) : (
+                      <>
+                        <div
+                          onClick={() => handleEdit(item, index)}
+                          className="p-2 rounded-xl text-white cursor-pointer duration-300 hover:opacity-[0.7] bg-green-700"
+                        >
+                          Edit
+                        </div>
+                        <div
+                          onClick={() => handleDelete(item._id)}
+                          className="p-2 rounded-xl text-white cursor-pointer duration-300 hover:opacity-[0.7] bg-red-500"
+                        >
+                          Delete
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               )
