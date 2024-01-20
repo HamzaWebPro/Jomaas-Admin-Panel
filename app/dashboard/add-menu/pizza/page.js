@@ -139,8 +139,8 @@ const PizzaForm = () => {
     "CRAB",
     "CHICKEN",
     "DONAIR MEAT",
-    "BBQ Sause",
-    "Chicken Breast",
+    "BBQ SAUCE",
+    "CHICKEN BREAST",
   ];
 
   //   date format function
@@ -283,7 +283,7 @@ const PizzaForm = () => {
           </Option>
         ))}
       </Select>
-      <p className="text-p-red">Add Prices</p>
+      <p className="text-p-red">Add Prices (CAD)</p>
       <div className="flex flex-wrap gap-1">
         <Input
           placeholder="Small Pizza Price"
@@ -348,7 +348,7 @@ const PizzaForm = () => {
                     <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
                       Toppings
                     </h4>
-                    <ul className="flex  gap-3">
+                    <ul className="flex flex-wrap gap-3">
                       {item.toppings.map((item, index) => (
                         <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
                           {item}
