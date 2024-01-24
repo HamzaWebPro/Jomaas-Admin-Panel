@@ -239,10 +239,37 @@ const PizzaForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding pizza:", error);
-        toast.error("Error adding pizza. Please try again.");
+        console.error("Error updating pizza:", error);
+        toast.error("Error updating pizza. Please try again.");
       });
   };
+
+  // pizza available status functionality
+
+  
+
+  let handleNotAvailable = (_id) => {
+    axios
+      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+        id: _id,
+        status: "not-available",
+      })
+      .then(() => {
+        location.reload()
+      });
+  };
+
+  let handleAvailable = (_id) => {
+    axios
+      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+        id: _id,
+        status: "available",
+      })
+      .then(() => {
+        location.reload()
+      });
+  };
+
   return (
     <div className="w-full flex flex-col gap-5 mx-auto mt-10">
       <ToastContainer />
@@ -381,8 +408,11 @@ const PizzaForm = () => {
                   </div>
                   <div className="text-end">
                     <small className="font-semibold text-p-brown">
-                      {formatDateTime(item.createdAt)}
-                    </small>
+                     Created: {formatDateTime(item.createdAt)}
+                    </small><br />
+                    <small className="font-semibold text-p-brown">
+                        Last Update: {formatDateTime(item.updatedAt)}
+                      </small>
                   </div>
                   <div className="flex justify-center gap-3 mt-5">
                     {edit && item._id === editID ? (
@@ -393,7 +423,7 @@ const PizzaForm = () => {
                         ariaLabel="infinity-spin-loading"
                       />
                     ) : (
-                      <>
+                      <div className="flex flex-wrap gap-3">
                         <div
                           onClick={() => handleEdit(item, index)}
                           className="p-2 rounded-xl text-white cursor-pointer duration-300 hover:opacity-[0.7] bg-green-700"
@@ -406,7 +436,22 @@ const PizzaForm = () => {
                         >
                           Delete
                         </div>
-                      </>
+                        {item.isAvailable === "not-available" ? (
+                          <div
+                            onClick={() => handleAvailable(item._id)}
+                            className="p-2 rounded-xl text-white cursor-pointer duration-300 hover:opacity-[0.7] bg-p-blue"
+                          >
+                            Available
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => handleNotAvailable(item._id)}
+                            className="p-2 rounded-xl text-white cursor-pointer duration-300 hover:opacity-[0.7] bg-p-red"
+                          >
+                            Not Available
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>

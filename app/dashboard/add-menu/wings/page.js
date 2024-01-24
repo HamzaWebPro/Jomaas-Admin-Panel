@@ -1,53 +1,49 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, Input, Button } from "antd";
+import { Select, Input } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonButton from "@/app/_components/_common-button/CommonButton";
-import Cookies from "js-cookie";
-import { useDispatch, useSelector } from "react-redux";
-import Image from "next/image";
 import { InfinitySpin } from "react-loader-spinner";
-
+import { useDispatch, useSelector } from "react-redux";
 const { Option } = Select;
 
-const DonairForm = () => {
+const WingsForm = () => {
   let data = useSelector((state) => state);
   let [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
   let [updateButton, setUpdateButton] = useState(false);
-  const [donairData, setDonairData] = useState({
+  const [wingsData, setWingsData] = useState({
     name: "",
     description: "",
     image: "",
-    toppings: [],
+    pieces: "",
+    tossedIn: [],
     prices: "",
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setDonairData({ ...donairData, [field]: value });
+    setWingsData({ ...wingsData, [field]: value });
   };
 
   const handleSubmit = () => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/donair",
-        donairData
-      )
+      .post("http://localhost:8000/api/v1/add-menu/wings", wingsData)
       .then((res) => {
-        if (res.data.message === "Your Donair Item Successfully Created!!") {
+        if (res.data.message === "Your Wings Item Successfully Created!!") {
           location.reload();
           toast.success(res.data.message);
-          setDonairData({
+          setWingsData({
             name: "",
             description: "",
             image: "",
-            toppings: [],
-            prices: 0,
+            pieces: "",
+            tossedIn: [],
+            prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
@@ -55,50 +51,41 @@ const DonairForm = () => {
         }
       })
       .catch((error) => {
-        console.error("Error adding donair:", error);
-        toast.error("Error adding donair. Please try again.");
+        console.error("Error adding wings:", error);
+        toast.error("Error adding wings. Please try again.");
       });
   };
 
-  // delete donair function
+  // delete wings function
   let handleDelete = (_id) => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/deletedonair",
-        {
-          id: _id,
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/deletewings", {
+        id: _id,
+      })
       .then(() => {
         location.reload();
       });
   };
 
-  // get all donairs
-  let [allDonairs, setAllDonairs] = useState([]);
+  // get all wings
+  let [allWings, setAllWings] = useState([]);
   useEffect(() => {
-    axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getdonair")
-      .then((res) => {
-        setAllDonairs(res.data);
-      });
+    axios.get("http://localhost:8000/api/v1/add-menu/getwings").then((res) => {
+      setAllWings(res.data);
+    });
   }, []);
 
-  // topping array
-  const toppings = ["SWEET SAUCE", "SOUR CREAM", "TZATZIKI", "GARLIC SAUCE"];
-
-  // date format function
-  const formatDateTime = (createdAt) => {
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(createdAt).toLocaleDateString(undefined, options);
-  };
+  // tossedIn array
+  const tossedInOptions = [
+    "Screamin'Hot",
+    "BBQ",
+    "Honey Garlic",
+    "Salt & Pepper",
+    "Lemon Pepper",
+    "Teriyaki",
+    "Sweet Chili",
+    "Mild Sauce",
+  ];
 
   // edit functionalities
   let [edit, setEdit] = useState(false);
@@ -113,11 +100,12 @@ const DonairForm = () => {
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setDonairData({
+    setWingsData({
       name: item.name,
       description: item.description,
       image: item.image,
-      toppings: item.toppings,
+      pieces: item.pieces,
+      tossedIn: item.tossedIn,
       prices: item.prices,
     });
   };
@@ -127,35 +115,36 @@ const DonairForm = () => {
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setDonairData({
+    setWingsData({
       name: "",
       description: "",
       image: "",
-      toppings: [],
+      pieces: "",
+      tossedIn: [],
       prices: "",
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the donair data from database
+  // update the wings data from database
   let handleUpdate = () => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/updatedonair",
-        {
-          id: editID,
-          updatedDonair: donairData,
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/updatewings", {
+        id: editID,
+        updatedWings: wingsData,
+      })
       .then((res) => {
-        if (res.data.message === "Your Donair Item Successfully Updated!!") {
+        if (res.data.message === "Your Wings Item Successfully Updated!!") {
           location.reload();
           toast.success(res.data.message);
-          setDonairData({
+          setWingsData({
             name: "",
             description: "",
             image: "",
-            toppings: [],
+
+            pieces: "",
+
+            tossedIn: [],
             prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
@@ -164,18 +153,17 @@ const DonairForm = () => {
         }
       })
       .catch((error) => {
-        console.error("Error updating donair:", error);
-        toast.error("Error updating donair. Please try again.");
+        console.error("Error updating wings:", error);
+        toast.error("Error updating wings. Please try again.");
       });
   };
 
-  // DOANIR available status functionality
-
+  // WINGS available status functionality
   let [availableBtn, setAvailableBtn] = useState(false);
 
   let handleNotAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/donairstatus", {
+      .post("http://localhost:8000/api/v1/add-menu/wingsstatus", {
         id: _id,
         status: "not-available",
       })
@@ -186,7 +174,7 @@ const DonairForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/donairstatus", {
+      .post("http://localhost:8000/api/v1/add-menu/wingsstatus", {
         id: _id,
         status: "available",
       })
@@ -195,50 +183,71 @@ const DonairForm = () => {
       });
   };
 
+  // date format function
+  const formatDateTime = (createdAt) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(createdAt).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div className="w-full flex flex-col gap-5 mx-auto mt-10">
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your donair item NO. {editItem + 1}
+          Update your wings item NO. {editItem + 1}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your donair items
+          Add your wings items
         </h3>
       )}
       <Input
-        placeholder="Donair Name"
-        value={donairData.name}
+        placeholder="Wings Name"
+        value={wingsData.name}
         onChange={(e) => handleChange(e.target.value, "name")}
       />
       <Input.TextArea
-        placeholder="Donair Description"
-        value={donairData.description}
+        placeholder="Wings Description"
+        value={wingsData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={donairData.image}
+        value={wingsData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
-      <Select
-        mode="tags"
-        style={{ width: "100%" }}
-        placeholder="Select Toppings"
-        onChange={(value) => handleChange(value, "toppings")}
-        value={donairData.toppings}
-      >
-        {toppings.map((item) => (
-          <Option key={item} value={item}>
-            {item}
-          </Option>
-        ))}
-      </Select>
+      <div className="flex gap-4">
+        <Select
+          mode="tags"
+          style={{ width: "100%" }}
+          placeholder="Select Tossed In"
+          onChange={(value) => handleChange(value, "tossedIn")}
+          value={wingsData.tossedIn}
+        >
+          {tossedInOptions.map((item) => (
+            <Option key={item} value={item}>
+              {item}
+            </Option>
+          ))}
+        </Select>
+        <Input
+          placeholder="Pieces"
+          type="number"
+          value={wingsData.pieces}
+          onChange={(e) => handleChange(e.target.value, "pieces")}
+        />
+      </div>
       <Input
-        placeholder="Donair Price (CAD)"
+        placeholder="Wings Price (CAD)"
         type="number"
-        value={donairData.prices}
+        value={wingsData.prices}
         onChange={(e) => handleChange(e.target.value, "prices")}
       />
 
@@ -256,11 +265,11 @@ const DonairForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all donair items from here
+          Manage your all wings items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allDonairs &&
-            allDonairs.map(
+          {allWings &&
+            allWings.map(
               (item, index) =>
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
@@ -269,17 +278,17 @@ const DonairForm = () => {
                       {index + 1}
                     </h3>
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
-                      {item.name}
+                      {item.name} ({item.pieces && item.pieces}Pcs)
                     </h4>
                     <p className="text-[12px] text-p-brown">
                       {item.description}
                     </p>
                     <div className="">
                       <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                        Toppings
+                        Tossed In
                       </h4>
                       <ul className="flex flex-wrap gap-3">
-                        {item.toppings.map((item, index) => (
+                        {item.tossedIn.map((item, index) => (
                           <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
                             {item}
                           </li>
@@ -293,10 +302,11 @@ const DonairForm = () => {
                       <p className="text-p-brown">{item.prices}</p>
                     </div>
                     <div className="text-end">
-                    <small className="font-semibold text-p-brown">
-                     Created: {formatDateTime(item.createdAt)}
-                    </small><br />
-                    <small className="font-semibold text-p-brown">
+                      <small className="font-semibold text-p-brown">
+                        created: {formatDateTime(item.createdAt)}
+                      </small>
+                      <br />
+                      <small className="font-semibold text-p-brown">
                         Last Update: {formatDateTime(item.updatedAt)}
                       </small>
                     </div>
@@ -349,4 +359,4 @@ const DonairForm = () => {
   );
 };
 
-export default DonairForm;
+export default WingsForm;

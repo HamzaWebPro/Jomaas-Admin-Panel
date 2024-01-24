@@ -17,7 +17,7 @@ const TopNav = () => {
     router.push("/");
   };
   return (
-    <div className="fixed py-[20px] px-[10px] bg-p-yellow w-full flex z-[9999] justify-end top-0 right-0">
+    <div className="fixed py-[20px] px-[10px] shadow-lg bg-p-yellow w-full flex z-[9999] justify-end top-0 right-0">
       <div className="flex gap-x-3 items-center">
         <span className="text-p-brown font-semibold">
           Jomaa's Pizza & Donair, {data.userData.userInfo && data.userData.userInfo.branchName}-Branch.
