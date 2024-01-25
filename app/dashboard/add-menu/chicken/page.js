@@ -280,10 +280,11 @@ const ChickenForm = () => {
                     {index + 1}
                   </h3>
                   <h4 className="text-[20px] text-p-red font-semibold capitalize ">
-                    {item.name} {item.comesWith.length === 0 ? "" : "(Combo)"}
+                   {item.pieces} {item.name} {item.comesWith.length === 0 ? "" : "(Combo)"}
                   </h4>
                   <p className="text-[12px] text-p-brown">{item.description}</p>
-                  <div className="">
+                 
+                 {item.comesWith.length !== 0 && <div className="">
                     <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
                       Comes With
                     </h4>
@@ -294,7 +295,7 @@ const ChickenForm = () => {
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </div>}
                   <div className="">
                     <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                       Prices (CAD)
