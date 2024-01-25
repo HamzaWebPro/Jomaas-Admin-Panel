@@ -274,9 +274,7 @@ const WingsForm = () => {
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                     <img src={item.image} className="w-full h-auto" />
-                    <h3 className="text-[20px] font-bold text-p-red">
-                      {index + 1}
-                    </h3>
+                  
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
                       {item.name} ({item.pieces && item.pieces}Pcs)
                     </h4>

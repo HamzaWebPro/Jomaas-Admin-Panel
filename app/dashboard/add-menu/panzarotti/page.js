@@ -1,54 +1,33 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, Input, Button } from "antd";
+import { Select, Input } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonButton from "@/app/_components/_common-button/CommonButton";
-import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import Image from "next/image";
 import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
-const PizzaForm = () => {
+const PanzarottiForm = () => {
   let data = useSelector((state) => state);
-  let [branch, setBracnh] = useState(
+  let [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
   let [updateButton, setUpdateButton] = useState(false);
-  const [pizzaData, setPizzaData] = useState({
-    name: "",
+  const [panzarottiData, setPanzarottiData] = useState({
     description: "",
     image: "",
     toppings: [],
-    prices: {
-      small: "",
-      medium: "",
-      large: "",
-      extralarge: "",
-    },
-    // branch: Cookies.get("adminData")
-    //   ? JSON.parse(Cookies.get("adminData")).branchName
-    //   : "",
+    comesWith: [],
+    prices: "",
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setPizzaData({ ...pizzaData, [field]: value });
-  };
-
-  const handlePriceChange = (value, size) => {
-    setUpdateButton(true);
-    setPizzaData({
-      ...pizzaData,
-      prices: {
-        ...pizzaData.prices,
-        [size]: value,
-      },
-    });
+    setPanzarottiData({ ...panzarottiData, [field]: value });
   };
 
   const handleSubmit = () => {
@@ -56,28 +35,17 @@ const PizzaForm = () => {
 
     // Send data to the backend using Axios
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/pizza",
-        pizzaData
-      )
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/panzarotti", panzarottiData)
       .then((res) => {
-        if (res.data.message === "Your Pizza Item Successfully Created!!") {
+        if (res.data.message === "Your Panzarotti Item Successfully Created!!") {
           location.reload();
           toast.success(res.data.message);
-          setPizzaData({
-            name: "",
+          setPanzarottiData({
             description: "",
             image: "",
             toppings: [],
-            prices: {
-              small: "",
-              medium: "",
-              large: "",
-              extralarge: "",
-            },
-            // branch: Cookies.get("adminData")
-            //   ? JSON.parse(Cookies.get("adminData")).branchName
-            //   : "",
+            comesWith: [],
+            prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
@@ -86,14 +54,15 @@ const PizzaForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding pizza:", error);
-        toast.error("Error adding pizza. Please try again.");
+        console.error("Error adding panzarotti:", error);
+        toast.error("Error adding panzarotti. Please try again.");
       });
   };
-  //   delete product function
+
+  // delete panzarotti function
   let handleDelete = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletepizza", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletepanzarotti", {
         id: _id,
       })
       .then(() => {
@@ -101,48 +70,15 @@ const PizzaForm = () => {
       });
   };
 
-  //   get all pizza
-  let [allPizza, setAllPizza] = useState([]);
+  // get all panzarotti
+  let [allPanzarotti, setAllPanzarotti] = useState([]);
   useEffect(() => {
     axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpizza")
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpanzarotti")
       .then((res) => {
-        setAllPizza(res.data);
+        setAllPanzarotti(res.data);
       });
   }, []);
-
-  //   topping array
-  const toppings = [
-    "HAM",
-    "SALAMI",
-    "PEPPERONI",
-    "BACON",
-    "GROUND BEEF",
-    "SAUSAGE",
-    "EXTRA CHEESE",
-    "FETA",
-    "ROASTED GARLIC",
-    "CHEDDAR",
-    "PINEAPPLE",
-    "GREEN PEPPERS",
-    "FRESH TOMATOES",
-    "COOKED TOMATOES",
-    "HOT BANANA PEPPERS",
-    "ONIONS",
-    "RED ONIONS",
-    "BLACK OLIVES",
-    "GREEN OLIVES",
-    "MUSHROOM",
-    "SPINACH",
-    "JALAPENO",
-    "SHRIMP",
-    "CRAB",
-    "CHICKEN",
-    "DONAIR MEAT",
-    "BBQ SAUCE",
-    "CHICKEN BREAST",
-  ];
-
   //   date format function
   const formatDateTime = (createdAt) => {
     const options = {
@@ -156,6 +92,21 @@ const PizzaForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
+  // comesWith array
+  const comesWith = [
+    "Option1",
+    "Option2",
+    // Add other options as needed
+  ];
+  const toppings = [
+    "Option1",
+    "Option2",
+    "Option3",
+    "Option4",
+    "Optiuon5"
+    // Add other options as needed
+  ];
+
   // edit functionalities
   let [edit, setEdit] = useState(false);
   let [editID, setEditID] = useState("");
@@ -164,22 +115,17 @@ const PizzaForm = () => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(item);
+    setEditItem(index);
 
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setPizzaData({
-      name: item.name,
+    setPanzarottiData({
       description: item.description,
       image: item.image,
       toppings: item.toppings,
-      prices: {
-        small: item.prices.small,
-        medium: item.prices.medium,
-        large: item.prices.large,
-        extralarge: item.prices.extralarge,
-      },
+      comesWith: item.comesWith,
+      prices: item.prices,
     });
   };
 
@@ -188,49 +134,33 @@ const PizzaForm = () => {
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setPizzaData({
-      name: "",
+    setPanzarottiData({
       description: "",
       image: "",
       toppings: [],
-      prices: {
-        small: "",
-        medium: "",
-        large: "",
-        extralarge: "",
-      },
-      // branch: Cookies.get("adminData")
-      //   ? JSON.parse(Cookies.get("adminData")).branchName
-      //   : "",
+      comesWith: [],
+      prices: "",
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the pizza data from database
+  // update the panzarotti data from the database
   let handleUpdate = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatepizza", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatepanzarotti", {
         id: editID,
-        updatedPizza: pizzaData,
+        updatedPanzarotti: panzarottiData,
       })
       .then((res) => {
-        if (res.data.message === "Your Pizza Item Successfully Updated!!") {
+        if (res.data.message === "Your Panzarotti Item Successfully Updated!!") {
           location.reload();
           toast.success(res.data.message);
-          setPizzaData({
-            name: "",
+          setPanzarottiData({
             description: "",
             image: "",
             toppings: [],
-            prices: {
-              small: "",
-              medium: "",
-              large: "",
-              extralarge: "",
-            },
-            // branch: Cookies.get("adminData")
-            //   ? JSON.parse(Cookies.get("adminData")).branchName
-            //   : "",
+            comesWith: [],
+            prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
@@ -239,34 +169,31 @@ const PizzaForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error updating pizza:", error);
-        toast.error("Error updating pizza. Please try again.");
+        console.error("Error updating Panzarotti:", error);
+        toast.error("Error updating Panzarotti. Please try again.");
       });
   };
 
-  // pizza available status functionality
-
-  
-
+  // panzarotti available status functionality
   let handleNotAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus", {
         id: _id,
         status: "not-available",
       })
       .then(() => {
-        location.reload()
+        location.reload();
       });
   };
 
   let handleAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus", {
         id: _id,
         status: "available",
       })
       .then(() => {
-        location.reload()
+        location.reload();
       });
   };
 
@@ -275,36 +202,44 @@ const PizzaForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your pizza item - {editItem.name}
+          Update your Panzarotti item NO. {editItem + 1}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your pizza items
+          Add your Panzarotti items
         </h3>
       )}
       <Input
-        placeholder="Pizza Name"
-        value={pizzaData.name}
-        onChange={(e) => handleChange(e.target.value, "name")}
-      />
-      <Input.TextArea
-        placeholder="Pizza Description"
-        value={pizzaData.description}
+        placeholder="Panzarotti Description"
+        value={panzarottiData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={pizzaData.image}
+        value={panzarottiData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
       <Select
         mode="tags"
         style={{ width: "100%" }}
-        placeholder="Select Toppings"
+        placeholder="Toppings"
         onChange={(value) => handleChange(value, "toppings")}
-        value={pizzaData.toppings}
+        value={panzarottiData.toppings}
       >
         {toppings.map((item) => (
+          <Option key={item} value={item}>
+            {item}
+          </Option>
+        ))}
+      </Select>
+      <Select
+        mode="tags"
+        style={{ width: "100%" }}
+        placeholder="Comes with"
+        onChange={(value) => handleChange(value, "comesWith")}
+        value={panzarottiData.comesWith}
+      >
+        {comesWith.map((item) => (
           <Option key={item} value={item}>
             {item}
           </Option>
@@ -313,32 +248,10 @@ const PizzaForm = () => {
       <p className="text-p-red">Add Prices (CAD)</p>
       <div className="flex flex-wrap gap-1">
         <Input
-          placeholder="Small Pizza Price"
+          placeholder="Panzarotti Price"
           type="number"
-          className="w-[49%]"
-          value={pizzaData.prices.small}
-          onChange={(e) => handlePriceChange(e.target.value, "small")}
-        />
-        <Input
-          placeholder="Medium Pizza Price"
-          type="number"
-          className="w-[49%]"
-          value={pizzaData.prices.medium}
-          onChange={(e) => handlePriceChange(e.target.value, "medium")}
-        />
-        <Input
-          placeholder="Large Pizza Price"
-          type="number"
-          className="w-[49%]"
-          value={pizzaData.prices.large}
-          onChange={(e) => handlePriceChange(e.target.value, "large")}
-        />
-        <Input
-          placeholder="Extra Large Pizza Price"
-          type="number"
-          className="w-[49%]"
-          value={pizzaData.prices.extralarge}
-          onChange={(e) => handlePriceChange(e.target.value, "extralarge")}
+          value={panzarottiData.prices}
+          onChange={(e) => handleChange(e.target.value, "prices")}
         />
       </div>
 
@@ -356,20 +269,22 @@ const PizzaForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          manage your all pizza items from here
+          Manage your all Panzarotti items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allPizza.map(
+          {allPanzarotti.map(
             (item, index) =>
               item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
-               
-                  <h4 className="text-[20px] text-p-red mt-3 font-semibold capitalize ">
-                    {item.name}
+                  
+                  <h4 className="text-[20px] mt-3 text-p-red font-semibold capitalize ">
+                   {item.toppings.length} Toppings
                   </h4>
-                  <p className="text-[12px] text-p-brown">{item.description}</p>
-                  <div className="">
+                  <p className="text-[12px] text-p-brown">
+                      {item.description}
+                    </p>
+                 {item.toppings.length !== 0 && <div className="">
                     <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
                       Toppings
                     </h4>
@@ -380,37 +295,33 @@ const PizzaForm = () => {
                         </li>
                       ))}
                     </ul>
+                  </div>}
+                  <div className="">
+                    <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
+                      Comes With
+                    </h4>
+                    <ul  className="flex flex-wrap gap-3">
+                      {item.comesWith.map((item, index) => (
+                        <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">{item}</li>
+                      ))}
+                    </ul>
                   </div>
                   <div className="">
                     <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                       Prices (CAD)
                     </h4>
                     <ul>
-                      <li className="text-p-brown">
-                        <span className="font-semibold">Small:</span>{" "}
-                        {item.prices.small}
-                      </li>
-                      <li className="text-p-brown">
-                        <span className="font-semibold">Medium:</span>{" "}
-                        {item.prices.medium}
-                      </li>
-                      <li className="text-p-brown">
-                        <span className="font-semibold">Large:</span>{" "}
-                        {item.prices.large}
-                      </li>
-                      <li className="text-p-brown">
-                        <span className="font-semibold">Extralarge:</span>{" "}
-                        {item.prices.extralarge}
-                      </li>
+                      <li className="text-p-brown">{item.prices}</li>
                     </ul>
                   </div>
                   <div className="text-end">
                     <small className="font-semibold text-p-brown">
-                     Created: {formatDateTime(item.createdAt)}
-                    </small><br />
+                      Created: {formatDateTime(item.createdAt)}
+                    </small>
+                    <br />
                     <small className="font-semibold text-p-brown">
-                        Last Update: {formatDateTime(item.updatedAt)}
-                      </small>
+                      Last Update: {formatDateTime(item.updatedAt)}
+                    </small>
                   </div>
                   <div className="flex justify-center gap-3 mt-5">
                     {edit && item._id === editID ? (
@@ -461,4 +372,5 @@ const PizzaForm = () => {
   );
 };
 
-export default PizzaForm;
+export default PanzarottiForm;
+

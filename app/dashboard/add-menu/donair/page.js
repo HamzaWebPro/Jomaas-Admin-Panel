@@ -108,7 +108,7 @@ const DonairForm = () => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(index);
+    setEditItem(item.name);
 
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -175,7 +175,7 @@ const DonairForm = () => {
 
   let handleNotAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/donairstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/donairstatus", {
         id: _id,
         status: "not-available",
       })
@@ -186,7 +186,7 @@ const DonairForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/donairstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/donairstatus", {
         id: _id,
         status: "available",
       })
@@ -200,7 +200,7 @@ const DonairForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your donair item NO. {editItem + 1}
+          Update your donair item - {editItem}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
@@ -265,10 +265,8 @@ const DonairForm = () => {
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                     <img src={item.image} className="w-full h-auto" />
-                    <h3 className="text-[20px] font-bold text-p-red">
-                      {index + 1}
-                    </h3>
-                    <h4 className="text-[20px] text-p-red font-semibold capitalize ">
+                    
+                    <h4 className="text-[20px] mt-3 text-p-red font-semibold capitalize ">
                       {item.name}
                     </h4>
                     <p className="text-[12px] text-p-brown">
