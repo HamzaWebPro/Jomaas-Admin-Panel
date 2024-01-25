@@ -1,65 +1,81 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, Input } from "antd";
+import { Input } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonButton from "@/app/_components/_common-button/CommonButton";
 import { InfinitySpin } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
-const { Option } = Select;
 
-const WingsForm = () => {
-  let data = useSelector((state) => state);
-  let [branch, setBranch] = useState(
+const PoutineForm = () => {
+  const data = useSelector((state) => state);
+  const [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
-  let [updateButton, setUpdateButton] = useState(false);
-  const [wingsData, setWingsData] = useState({
+  const [updateButton, setUpdateButton] = useState(false);
+  const [poutineData, setPoutineData] = useState({
     name: "",
-    description: "",
-    image: "",
-    pieces: "",
-    tossedIn: [],
-    prices: "",
-    branch: data.userData.userInfo && data.userData.userInfo.branchName,
+    description:"",
+    image: "", // Add image property for Poutine
+    prices: {
+      medium: "",
+      large: "",
+    },
+    branch:
+      data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setWingsData({ ...wingsData, [field]: value });
+    setPoutineData({ ...poutineData, [field]: value });
+  };
+
+  const handlePriceChange = (value, size) => {
+    setUpdateButton(true);
+    setPoutineData({
+      ...poutineData,
+      prices: {
+        ...poutineData.prices,
+        [size]: value,
+      },
+    });
   };
 
   const handleSubmit = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/wings", wingsData)
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutines", poutineData)
       .then((res) => {
-        if (res.data.message === "Your Wings Item Successfully Created!!") {
+        if (
+          res.data.message === "Your Poutine Item Successfully Created!!"
+        ) {
           location.reload();
           toast.success(res.data.message);
-          setWingsData({
+          setPoutineData({
             name: "",
-            description: "",
-            image: "",
-            pieces: "",
-            tossedIn: [],
-            prices: "",
-            branch: data.userData.userInfo && data.userData.userInfo.branchName,
+            description:"",
+            image: "", 
+            prices: {
+              medium: "",
+              large: "",
+            },
+            branch:
+              data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
-          toast.error(res.data.message);
+          toast.error(res.data.message)
         }
       })
       .catch((error) => {
-        console.error("Error adding wings:", error);
-        toast.error("Error adding wings. Please try again.");
+        console.error("Error adding poutine:", error);
+        toast.error("Error adding poutine. Please try again.");
       });
   };
 
-  // delete wings function
-  let handleDelete = (_id) => {
+  // delete poutine function
+  const handleDelete = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletewings", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletepoutine", {
         id: _id,
       })
       .then(() => {
@@ -67,124 +83,16 @@ const WingsForm = () => {
       });
   };
 
-  // get all wings
-  let [allWings, setAllWings] = useState([]);
+  // get all poutines
+  const [allPoutines, setAllPoutines] = useState([]);
   useEffect(() => {
-    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getwings").then((res) => {
-      setAllWings(res.data);
+    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpoutines").then((res) => {
+      setAllPoutines(res.data);
     });
   }, []);
 
-  // tossedIn array
-  const tossedInOptions = [
-    "Screamin'Hot",
-    "BBQ",
-    "Honey Garlic",
-    "Salt & Pepper",
-    "Lemon Pepper",
-    "Teriyaki",
-    "Sweet Chili",
-    "Mild Sauce",
-  ];
-
-  // edit functionalities
-  let [edit, setEdit] = useState(false);
-  let [editID, setEditID] = useState("");
-  let [editItem, setEditItem] = useState();
-  let handleEdit = (item, index) => {
-    setUpdateButton(false);
-    setEdit(true);
-    setEditID(item._id);
-    setEditItem(index);
-
-    // Scroll to the top of the page
-    window.scrollTo({ top: 0, behavior: "smooth" });
-
-    setWingsData({
-      name: item.name,
-      description: item.description,
-      image: item.image,
-      pieces: item.pieces,
-      tossedIn: item.tossedIn,
-      prices: item.prices,
-    });
-  };
-
-  let handleCancelEdit = () => {
-    setUpdateButton(false);
-    setEdit(false);
-    setEditID("");
-    setEditItem("");
-    setWingsData({
-      name: "",
-      description: "",
-      image: "",
-      pieces: "",
-      tossedIn: [],
-      prices: "",
-      branch: data.userData.userInfo && data.userData.userInfo.branchName,
-    });
-  };
-
-  // update the wings data from database
-  let handleUpdate = () => {
-    axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatewings", {
-        id: editID,
-        updatedWings: wingsData,
-      })
-      .then((res) => {
-        if (res.data.message === "Your Wings Item Successfully Updated!!") {
-          location.reload();
-          toast.success(res.data.message);
-          setWingsData({
-            name: "",
-            description: "",
-            image: "",
-
-            pieces: "",
-
-            tossedIn: [],
-            prices: "",
-            branch: data.userData.userInfo && data.userData.userInfo.branchName,
-          });
-        } else {
-          toast.error(res.data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error updating wings:", error);
-        toast.error("Error updating wings. Please try again.");
-      });
-  };
-
-  // WINGS available status functionality
-  let [availableBtn, setAvailableBtn] = useState(false);
-
-  let handleNotAvailable = (_id) => {
-    axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/wingsstatus", {
-        id: _id,
-        status: "not-available",
-      })
-      .then(() => {
-        location.reload();
-      });
-  };
-
-  let handleAvailable = (_id) => {
-    axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/wingsstatus", {
-        id: _id,
-        status: "available",
-      })
-      .then(() => {
-        location.reload();
-      });
-  };
-
-  // date format function
-  const formatDateTime = (createdAt) => {
+   //   date format function
+   const formatDateTime = (createdAt) => {
     const options = {
       year: "numeric",
       month: "long",
@@ -196,60 +104,151 @@ const WingsForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
+  // edit functionalities
+  const [edit, setEdit] = useState(false);
+  const [editID, setEditID] = useState("");
+  const [editItem, setEditItem] = useState();
+  const handleEdit = (item, index) => {
+    setUpdateButton(false);
+    setEdit(true);
+    setEditID(item._id);
+    setEditItem(index);
+
+    // Scroll to the top of the page
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    setPoutineData({
+      name: item.name,
+      description:item.description,
+      prices: {
+        medium: item.prices.medium,
+        large: item.prices.large,
+      },
+      image: item.image, // Set image for editing
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setUpdateButton(false);
+    setEdit(false);
+    setEditID("");
+    setEditItem("");
+    setPoutineData({
+      name: "",
+      description:"",
+      prices: {
+        medium: "",
+        large: "",
+      },
+      image: "", // Reset image on cancel
+      branch: data.userData.userInfo && data.userData.userInfo.branchName,
+    });
+  };
+
+  // update the poutine data from database
+  const handleUpdate = () => {
+    axios
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatepoutine", {
+        id: editID,
+        updatedPoutine: poutineData,
+      })
+      .then((res) => {
+        if (
+          res.data.message === "Your Poutine Item Successfully Updated!!"
+        ) {
+          location.reload();
+          toast.success(res.data.message);
+          setPoutineData({
+            name: "",
+            description:"",
+            prices: {
+              medium: "",
+              large: "",
+            },
+            image: "", // Reset image after update
+            branch:
+              data.userData.userInfo && data.userData.userInfo.branchName,
+          });
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating poutine:", error);
+        toast.error("Error updating poutine. Please try again.");
+      });
+  };
+
+  // POUTINE available status functionality
+  const [availableBtn, setAvailableBtn] = useState(false);
+
+  const handleNotAvailable = (_id) => {
+    axios
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus", {
+        id: _id,
+        status: "not-available",
+      })
+      .then(() => {
+        location.reload();
+      });
+  };
+
+  const handleAvailable = (_id) => {
+    axios
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus", {
+        id: _id,
+        status: "available",
+      })
+      .then(() => {
+        location.reload();
+      });
+  };
+
   return (
     <div className="w-full flex flex-col gap-5 mx-auto mt-10">
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your wings item NO. {editItem + 1}
+          Update your poutine item NO. {editItem + 1}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your wings items
+          Add your poutine items
         </h3>
       )}
       <Input
-        placeholder="Wings Name"
-        value={wingsData.name}
+        placeholder="Poutine Name"
+        value={poutineData.name}
         onChange={(e) => handleChange(e.target.value, "name")}
       />
       <Input.TextArea
-        placeholder="Wings Description"
-        value={wingsData.description}
+        placeholder="Poutine Description"
+        value={poutineData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
-        placeholder="Image URL"
-        value={wingsData.image}
+        placeholder="Poutine Image URL"
+        value={poutineData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
-      <div className="flex gap-4">
-        <Select
-          mode="tags"
-          style={{ width: "100%" }}
-          placeholder="Select Tossed In"
-          onChange={(value) => handleChange(value, "tossedIn")}
-          value={wingsData.tossedIn}
-        >
-          {tossedInOptions.map((item) => (
-            <Option key={item} value={item}>
-              {item}
-            </Option>
-          ))}
-        </Select>
+
+      <p className="text-p-red">Add Prices (CAD)</p>
+      <div className="flex flex-wrap gap-1">
         <Input
-          placeholder="Pieces"
+          placeholder="Medium Poutine Price"
           type="number"
-          value={wingsData.pieces}
-          onChange={(e) => handleChange(e.target.value, "pieces")}
+          className="w-[49%]"
+          value={poutineData.prices.medium}
+          onChange={(e) => handlePriceChange(e.target.value, "medium")}
+        />
+        <Input
+          placeholder="Large Poutine Price"
+          type="number"
+          className="w-[49%]"
+          value={poutineData.prices.large}
+          onChange={(e) => handlePriceChange(e.target.value, "large")}
         />
       </div>
-      <Input
-        placeholder="Wings Price (CAD)"
-        type="number"
-        value={wingsData.prices}
-        onChange={(e) => handleChange(e.target.value, "prices")}
-      />
 
       <div className="flex justify-center">
         {edit ? (
@@ -265,41 +264,34 @@ const WingsForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all wings items from here
+          Manage your all poutine items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allWings &&
-            allWings.map(
+          {allPoutines &&
+            allPoutines.map(
               (item, index) =>
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
-                    <img src={item.image} className="w-full h-auto" />
+                    <img src={item.image} alt={item.name} />
                     <h3 className="text-[20px] font-bold text-p-red">
                       {index + 1}
                     </h3>
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
-                      {item.name} ({item.pieces && item.pieces}Pcs)
+                      {item.name}
                     </h4>
                     <p className="text-[12px] text-p-brown">
                       {item.description}
                     </p>
                     <div className="">
-                      <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                        Tossed In
-                      </h4>
-                      <ul className="flex flex-wrap gap-3">
-                        {item.tossedIn.map((item, index) => (
-                          <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="">
                       <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                         Price (CAD)
                       </h4>
-                      <p className="text-p-brown">{item.prices}</p>
+                      <p className="text-p-brown font-semibold">
+                        Medium: {item.prices.medium}
+                      </p>
+                      <p className="text-p-brown font-semibold">
+                        Large: {item.prices.large}
+                      </p>
                     </div>
                     <div className="text-end">
                       <small className="font-semibold text-p-brown">
@@ -359,4 +351,4 @@ const WingsForm = () => {
   );
 };
 
-export default WingsForm;
+export default PoutineForm;
