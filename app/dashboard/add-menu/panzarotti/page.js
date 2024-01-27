@@ -141,7 +141,7 @@ const PanzarottiForm = () => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(index);
+    setEditItem(item);
 
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -239,7 +239,7 @@ const PanzarottiForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your Panzarotti item NO. {editItem + 1}
+          Update your Panzarotti item - {editItem.toppings.length } Toppings
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">

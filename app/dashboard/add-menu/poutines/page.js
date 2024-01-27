@@ -16,14 +16,13 @@ const PoutineForm = () => {
   const [updateButton, setUpdateButton] = useState(false);
   const [poutineData, setPoutineData] = useState({
     name: "",
-    description:"",
+    description: "",
     image: "", // Add image property for Poutine
     prices: {
       medium: "",
       large: "",
     },
-    branch:
-      data.userData.userInfo && data.userData.userInfo.branchName,
+    branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
@@ -44,26 +43,26 @@ const PoutineForm = () => {
 
   const handleSubmit = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutines", poutineData)
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/poutines",
+        poutineData
+      )
       .then((res) => {
-        if (
-          res.data.message === "Your Poutine Item Successfully Created!!"
-        ) {
+        if (res.data.message === "Your Poutine Item Successfully Created!!") {
           location.reload();
           toast.success(res.data.message);
           setPoutineData({
             name: "",
-            description:"",
-            image: "", 
+            description: "",
+            image: "",
             prices: {
               medium: "",
               large: "",
             },
-            branch:
-              data.userData.userInfo && data.userData.userInfo.branchName,
+            branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
-          toast.error(res.data.message)
+          toast.error(res.data.message);
         }
       })
       .catch((error) => {
@@ -75,9 +74,12 @@ const PoutineForm = () => {
   // delete poutine function
   const handleDelete = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletepoutine", {
-        id: _id,
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/deletepoutine",
+        {
+          id: _id,
+        }
+      )
       .then(() => {
         location.reload();
       });
@@ -86,13 +88,15 @@ const PoutineForm = () => {
   // get all poutines
   const [allPoutines, setAllPoutines] = useState([]);
   useEffect(() => {
-    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpoutines").then((res) => {
-      setAllPoutines(res.data);
-    });
+    axios
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpoutines")
+      .then((res) => {
+        setAllPoutines(res.data);
+      });
   }, []);
 
-   //   date format function
-   const formatDateTime = (createdAt) => {
+  //   date format function
+  const formatDateTime = (createdAt) => {
     const options = {
       year: "numeric",
       month: "long",
@@ -112,14 +116,14 @@ const PoutineForm = () => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(index);
+    setEditItem(item);
 
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     setPoutineData({
       name: item.name,
-      description:item.description,
+      description: item.description,
       prices: {
         medium: item.prices.medium,
         large: item.prices.large,
@@ -135,7 +139,7 @@ const PoutineForm = () => {
     setEditItem("");
     setPoutineData({
       name: "",
-      description:"",
+      description: "",
       prices: {
         medium: "",
         large: "",
@@ -148,26 +152,26 @@ const PoutineForm = () => {
   // update the poutine data from database
   const handleUpdate = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatepoutine", {
-        id: editID,
-        updatedPoutine: poutineData,
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/updatepoutine",
+        {
+          id: editID,
+          updatedPoutine: poutineData,
+        }
+      )
       .then((res) => {
-        if (
-          res.data.message === "Your Poutine Item Successfully Updated!!"
-        ) {
+        if (res.data.message === "Your Poutine Item Successfully Updated!!") {
           location.reload();
           toast.success(res.data.message);
           setPoutineData({
             name: "",
-            description:"",
+            description: "",
             prices: {
               medium: "",
               large: "",
             },
             image: "", // Reset image after update
-            branch:
-              data.userData.userInfo && data.userData.userInfo.branchName,
+            branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
@@ -184,10 +188,13 @@ const PoutineForm = () => {
 
   const handleNotAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus", {
-        id: _id,
-        status: "not-available",
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus",
+        {
+          id: _id,
+          status: "not-available",
+        }
+      )
       .then(() => {
         location.reload();
       });
@@ -195,10 +202,13 @@ const PoutineForm = () => {
 
   const handleAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus", {
-        id: _id,
-        status: "available",
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/poutinestatus",
+        {
+          id: _id,
+          status: "available",
+        }
+      )
       .then(() => {
         location.reload();
       });
@@ -209,7 +219,7 @@ const PoutineForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your poutine item NO. {editItem + 1}
+          Update your poutine item - {editItem.name}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">

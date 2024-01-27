@@ -28,7 +28,7 @@ const GarlicFingersForm = () => {
     },
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
-  const comesWith = ["MARINARA SAUCE"];
+  const comesWith = ["MARINARA SAUCE","SWEET SAUCE"];
   const handleChange = (value, field) => {
     setUpdateButton(true);
     setGarlicFingersData({ ...garlicFingersData, [field]: value });

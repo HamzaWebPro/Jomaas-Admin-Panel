@@ -1,54 +1,57 @@
+// Import necessary libraries and components
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, Input, Button } from "antd";
+import { Select, Input } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommonButton from "@/app/_components/_common-button/CommonButton";
-import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import Image from "next/image";
 import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
-const ChickenForm = () => {
+const BurgerForm = () => {
+ 
   let data = useSelector((state) => state);
   let [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
   let [updateButton, setUpdateButton] = useState(false);
-  const [chickenData, setChickenData] = useState({
+  const [burgerData, setBurgerData] = useState({
     name: "",
     description: "",
     image: "",
-    pieces: "",
-    comesWith: [],
+    toppings: [],
     prices: "",
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
+  // Handle form field changes
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setChickenData({ ...chickenData, [field]: value });
+    setBurgerData({ ...burgerData, [field]: value });
   };
 
+  // Handle form submission
   const handleSubmit = () => {
     // Validate the form data here if needed
 
     // Send data to the backend using Axios
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickens", chickenData)
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/burger",
+        burgerData
+      )
       .then((res) => {
-        if (res.data.message === "Your Chicken Item Successfully Created!!") {
+        if (res.data.message === "Your Burger Item Successfully Created!!") {
           location.reload();
           toast.success(res.data.message);
-          setChickenData({
+          setBurgerData({
             name: "",
             description: "",
             image: "",
-            pieces: "",
-            comesWith: [],
+            toppings: [],
             prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
@@ -58,41 +61,36 @@ const ChickenForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding chicken:", error);
-        toast.error("Error adding chicken. Please try again.");
+        console.error("Error adding burger:", error);
+        toast.error("Error adding burger. Please try again.");
       });
   };
 
-  // delete chicken function
+  // Delete burger function
   let handleDelete = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletechicken", {
-        id: _id,
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/deleteburger",
+        {
+          id: _id,
+        }
+      )
       .then(() => {
         location.reload();
       });
   };
 
-  // get all chicken
-  let [allChicken, setAllChicken] = useState([]);
+  // Get all burgers
+  let [allBurgers, setAllBurgers] = useState([]);
   useEffect(() => {
     axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getchickens")
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getburger")
       .then((res) => {
-        setAllChicken(res.data);
+        setAllBurgers(res.data);
       });
   }, []);
 
-  // comesWith array
-  const comesWith = [
-    "Gravy",
-    "Fries",
-    "Taters",
-    // Add other toppings as needed
-  ];
-
-  // date format function
+  // Date format function
   const formatDateTime = (createdAt) => {
     const options = {
       year: "numeric",
@@ -105,7 +103,10 @@ const ChickenForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
-  // edit functionalities
+  // Toppings array
+  const toppings = ["TOPPING_1", "TOPPING_2", "TOPPING_3"]; // Replace with your actual toppings
+
+  // Edit functionalities
   let [edit, setEdit] = useState(false);
   let [editID, setEditID] = useState("");
   let [editItem, setEditItem] = useState();
@@ -118,12 +119,11 @@ const ChickenForm = () => {
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setChickenData({
+    setBurgerData({
       name: item.name,
       description: item.description,
       image: item.image,
-      pieces: item.pieces,
-      comesWith: item.comesWith,
+      toppings: item.toppings,
       prices: item.prices,
     });
   };
@@ -133,34 +133,37 @@ const ChickenForm = () => {
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setChickenData({
+    setBurgerData({
       name: "",
       description: "",
       image: "",
-      pieces: "",
-      comesWith: [],
+      toppings: [],
       prices: "",
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the chicken data from the database
+  // Update the burger data from the database
   let handleUpdate = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatechicken", {
-        id: editID,
-        updatedChicken: chickenData,
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/updateburger",
+        {
+          id: editID,
+          updatedBurger: burgerData,
+        }
+      )
       .then((res) => {
-        if (res.data.message === "Your Chicken Item Successfully Updated!!") {
+        if (
+          res.data.message === "Your Burger Item Successfully Updated!!"
+        ) {
           location.reload();
           toast.success(res.data.message);
-          setChickenData({
+          setBurgerData({
             name: "",
             description: "",
             image: "",
-            pieces: "",
-            comesWith: [],
+            toppings: [],
             prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
@@ -170,18 +173,21 @@ const ChickenForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error updating Chicken:", error);
-        toast.error("Error updating Chicken. Please try again.");
+        console.error("Error updating Burger:", error);
+        toast.error("Error updating Burger. Please try again.");
       });
   };
 
-  // chicken available status functionality
+  // Burger available status functionality
   let handleNotAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickenstatus", {
-        id: _id,
-        status: "not-available",
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/burgerstatus",
+        {
+          id: _id,
+          status: "not-available",
+        }
+      )
       .then(() => {
         location.reload();
       });
@@ -189,10 +195,13 @@ const ChickenForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickenstatus", {
-        id: _id,
-        status: "available",
-      })
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/burgerstatus",
+        {
+          id: _id,
+          status: "available",
+        }
+      )
       .then(() => {
         location.reload();
       });
@@ -203,53 +212,47 @@ const ChickenForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your Chicken item - {editItem.pieces} {editItem.name} {editItem.comesWith.length === 0 ? "" : "(Combo)"}
+          Update your Burger item - {editItem.name}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your Chicken items
+          Add your Burger items
         </h3>
       )}
       <Input
-        placeholder="Chicken Item Name"
-        value={chickenData.name}
+        placeholder="Burger Name"
+        value={burgerData.name}
         onChange={(e) => handleChange(e.target.value, "name")}
       />
-      <Input.TextArea
-        placeholder="Chicken Description"
-        value={chickenData.description}
+      <Input
+        placeholder="Burger Description"
+        value={burgerData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={chickenData.image}
+        value={burgerData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
       <Select
         mode="tags"
         style={{ width: "100%" }}
-        placeholder="Comes with"
-        onChange={(value) => handleChange(value, "comesWith")}
-        value={chickenData.comesWith}
+        placeholder="Toppings"
+        onChange={(value) => handleChange(value, "toppings")}
+        value={burgerData.toppings}
       >
-        {comesWith.map((item) => (
+        {toppings.map((item) => (
           <Option key={item} value={item}>
             {item}
           </Option>
         ))}
       </Select>
-      <Input
-        placeholder="Pieces"
-        type="number"
-        value={chickenData.pieces}
-        onChange={(e) => handleChange(e.target.value, "pieces")}
-      />
       <p className="text-p-red">Add Prices (CAD)</p>
       <div className="flex flex-wrap gap-1">
         <Input
-          placeholder="Chicken Price"
+          placeholder="Burger Price"
           type="number"
-          value={chickenData.prices}
+          value={burgerData.prices}
           onChange={(e) => handleChange(e.target.value, "prices")}
         />
       </div>
@@ -268,31 +271,33 @@ const ChickenForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all Chicken items from here
+          Manage your all Burger items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allChicken.map(
+          {allBurgers.map(
             (item, index) =>
               item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
-                  <h4 className="text-[20px] text-p-red font-semibold capitalize ">
-                   {item.pieces} {item.name} {item.comesWith.length === 0 ? "" : "(Combo)"}
+
+                  <h4 className="text-[20px] mt-3 text-p-red font-semibold capitalize ">
+                    {item.name}
                   </h4>
                   <p className="text-[12px] text-p-brown">{item.description}</p>
-                 
-                 {item.comesWith.length !== 0 && <div className="">
-                    <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                      Comes With
-                    </h4>
-                    <ul className="flex flex-wrap gap-3">
-                      {item.comesWith.map((item, index) => (
-                        <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>}
+                  {item.toppings.length !== 0 && (
+                    <div className="">
+                      <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
+                        Toppings
+                      </h4>
+                      <ul className="flex flex-wrap gap-3">
+                        {item.toppings.map((item, index) => (
+                          <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div className="">
                     <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                       Prices (CAD)
@@ -359,4 +364,4 @@ const ChickenForm = () => {
   );
 };
 
-export default ChickenForm;
+export default BurgerForm;

@@ -32,7 +32,10 @@ const WingsForm = () => {
 
   const handleSubmit = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/wings", wingsData)
+      .post(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/wings",
+        wingsData
+      )
       .then((res) => {
         if (res.data.message === "Your Wings Item Successfully Created!!") {
           location.reload();
@@ -70,9 +73,11 @@ const WingsForm = () => {
   // get all wings
   let [allWings, setAllWings] = useState([]);
   useEffect(() => {
-    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getwings").then((res) => {
-      setAllWings(res.data);
-    });
+    axios
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getwings")
+      .then((res) => {
+        setAllWings(res.data);
+      });
   }, []);
 
   // tossedIn array
@@ -95,7 +100,7 @@ const WingsForm = () => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(index);
+    setEditItem(item);
 
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -201,7 +206,8 @@ const WingsForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your wings item NO. {editItem + 1}
+          Update your wings item - {editItem.name} {` (${editItem.pieces})`}{" "}
+          Pcs
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
@@ -274,7 +280,7 @@ const WingsForm = () => {
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                     <img src={item.image} className="w-full h-auto" />
-                  
+
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
                       {item.name} ({item.pieces && item.pieces}Pcs)
                     </h4>
