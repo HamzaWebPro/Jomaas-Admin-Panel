@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Select, Input } from "antd";
+import { Select, Input, Button } from "antd";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,84 +10,92 @@ import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
-const PanzarottiForm = () => {
+const GarlicFingersForm = () => {
   let data = useSelector((state) => state);
   let [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
   let [updateButton, setUpdateButton] = useState(false);
-  const [panzarottiData, setPanzarottiData] = useState({
+  const [garlicFingersData, setGarlicFingersData] = useState({
     description: "",
     image: "",
-    toppings: [],
     comesWith: [],
-    prices: "",
+    prices: {
+      small: "",
+      medium: "",
+      large: "",
+      extralarge: "",
+    },
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
-
+  const comesWith = ["MARINARA SAUCE"];
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setPanzarottiData({ ...panzarottiData, [field]: value });
+    setGarlicFingersData({ ...garlicFingersData, [field]: value });
+  };
+
+  const handlePriceChange = (value, size) => {
+    setUpdateButton(true);
+    setGarlicFingersData({
+      ...garlicFingersData,
+      prices: {
+        ...garlicFingersData.prices,
+        [size]: value,
+      },
+    });
   };
 
   const handleSubmit = () => {
-    // Validate the form data here if needed
-
-    // Send data to the backend using Axios
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarotti",
-        panzarottiData
+        "http://localhost:8000/api/v1/add-menu/garlicfingers",
+        garlicFingersData
       )
       .then((res) => {
-        if (
-          res.data.message === "Your Panzarotti Item Successfully Created!!"
-        ) {
+        if (res.data.message === "Your Garlic Fingers Item Successfully Created!") {
           location.reload();
           toast.success(res.data.message);
-          setPanzarottiData({
+          setGarlicFingersData({
             description: "",
             image: "",
-            toppings: [],
             comesWith: [],
-            prices: "",
+            prices: {
+              small: "",
+              medium: "",
+              large: "",
+              extralarge: "",
+            },
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
         }
-        // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding panzarotti:", error);
-        toast.error("Error adding panzarotti. Please try again.");
+        console.error("Error adding garlic fingers:", error);
+        toast.error("Error adding garlic fingers. Please try again.");
       });
   };
 
-  // delete panzarotti function
   let handleDelete = (_id) => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/deletepanzarotti",
-        {
-          id: _id,
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/deletegarlicfingers", {
+        id: _id,
+      })
       .then(() => {
         location.reload();
       });
   };
 
-  // get all panzarotti
-  let [allPanzarotti, setAllPanzarotti] = useState([]);
+  let [allGarlicFingers, setAllGarlicFingers] = useState([]);
   useEffect(() => {
     axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpanzarotti")
+      .get("http://localhost:8000/api/v1/add-menu/getgarlicfingers")
       .then((res) => {
-        setAllPanzarotti(res.data);
+        setAllGarlicFingers(res.data);
       });
   }, []);
-  //   date format function
+
   const formatDateTime = (createdAt) => {
     const options = {
       year: "numeric",
@@ -100,58 +108,28 @@ const PanzarottiForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
-  // comesWith array
-  const comesWith = ["MARINARA SAUCE"];
-  const toppings = [
-    "HAM",
-    "SALAMI",
-    "PEPPERONI",
-    "BACON",
-    "GROUND BEEF",
-    "SAUSAGE",
-    "EXTRA CHEESE",
-    "FETA",
-    "ROASTED GARLIC",
-    "CHEDDAR",
-    "PINEAPPLE",
-    "GREEN PEPPERS",
-    "FRESH TOMATOES",
-    "COOKED TOMATOES",
-    "HOT BANANA PEPPERS",
-    "ONIONS",
-    "RED ONIONS",
-    "BLACK OLIVES",
-    "GREEN OLIVES",
-    "MUSHROOM",
-    "SPINACH",
-    "JALAPENO",
-    "SHRIMP",
-    "CRAB",
-    "CHICKEN",
-    "DONAIR MEAT",
-    "BBQ SAUCE",
-    "CHICKEN BREAST",
-  ];
-
-  // edit functionalities
   let [edit, setEdit] = useState(false);
   let [editID, setEditID] = useState("");
   let [editItem, setEditItem] = useState();
+
   let handleEdit = (item, index) => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
-    setEditItem(index);
+    setEditItem(item);
 
-    // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setPanzarottiData({
+    setGarlicFingersData({
       description: item.description,
       image: item.image,
-      toppings: item.toppings,
       comesWith: item.comesWith,
-      prices: item.prices,
+      prices: {
+        small: item.prices.small,
+        medium: item.prices.medium,
+        large: item.prices.large,
+        extralarge: item.prices.extralarge,
+      },
     });
   };
 
@@ -160,61 +138,58 @@ const PanzarottiForm = () => {
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setPanzarottiData({
+    setGarlicFingersData({
       description: "",
       image: "",
-      toppings: [],
       comesWith: [],
-      prices: "",
+      prices: {
+        small: "",
+        medium: "",
+        large: "",
+        extralarge: "",
+      },
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the panzarotti data from the database
   let handleUpdate = () => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/updatepanzarotti",
-        {
-          id: editID,
-          updatedPanzarotti: panzarottiData,
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/updategarlicfingers", {
+        id: editID,
+        updatedGarlicFingers: garlicFingersData,
+      })
       .then((res) => {
-        if (
-          res.data.message === "Your Panzarotti Item Successfully Updated!!"
-        ) {
+        if (res.data.message === "Your Garlic Fingers Item Successfully Updated!") {
           location.reload();
           toast.success(res.data.message);
-          setPanzarottiData({
+          setGarlicFingersData({
             description: "",
             image: "",
-            toppings: [],
             comesWith: [],
-            prices: "",
+            prices: {
+              small: "",
+              medium: "",
+              large: "",
+              extralarge: "",
+            },
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
         }
-        // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error updating Panzarotti:", error);
-        toast.error("Error updating Panzarotti. Please try again.");
+        console.error("Error updating garlic fingers:", error);
+        toast.error("Error updating garlic fingers. Please try again.");
       });
   };
 
-  // panzarotti available status functionality
   let handleNotAvailable = (_id) => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus",
-        {
-          id: _id,
-          status: "not-available",
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/garlicfingersstatus", {
+        id: _id,
+        status: "not-available",
+      })
       .then(() => {
         location.reload();
       });
@@ -222,13 +197,10 @@ const PanzarottiForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus",
-        {
-          id: _id,
-          status: "available",
-        }
-      )
+      .post("http://localhost:8000/api/v1/add-menu/garlicfingersstatus", {
+        id: _id,
+        status: "available",
+      })
       .then(() => {
         location.reload();
       });
@@ -239,56 +211,66 @@ const PanzarottiForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your Panzarotti item NO. {editItem + 1}
+          Update your garlic fingers item - {editItem.description}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your Panzarotti items
+          Add your garlic fingers items
         </h3>
       )}
       <Input
-        placeholder="Panzarotti Description"
-        value={panzarottiData.description}
+        placeholder="Garlic Fingers Description"
+        value={garlicFingersData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={panzarottiData.image}
+        value={garlicFingersData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
       <Select
         mode="tags"
         style={{ width: "100%" }}
-        placeholder="Toppings"
-        onChange={(value) => handleChange(value, "toppings")}
-        value={panzarottiData.toppings}
-      >
-        {toppings.map((item) => (
-          <Option key={item} value={item}>
-            {item}
-          </Option>
-        ))}
-      </Select>
-      <Select
-        mode="tags"
-        style={{ width: "100%" }}
-        placeholder="Comes with"
+        placeholder="Comes With"
         onChange={(value) => handleChange(value, "comesWith")}
-        value={panzarottiData.comesWith}
+        value={garlicFingersData.comesWith}
       >
         {comesWith.map((item) => (
           <Option key={item} value={item}>
             {item}
           </Option>
         ))}
+        {/* Add options for "Comes With" here */}
       </Select>
       <p className="text-p-red">Add Prices (CAD)</p>
       <div className="flex flex-wrap gap-1">
         <Input
-          placeholder="Panzarotti Price"
+          placeholder="Small Garlic Fingers Price"
           type="number"
-          value={panzarottiData.prices}
-          onChange={(e) => handleChange(e.target.value, "prices")}
+          className="w-[49%]"
+          value={garlicFingersData.prices.small}
+          onChange={(e) => handlePriceChange(e.target.value, "small")}
+        />
+        <Input
+          placeholder="Medium Garlic Fingers Price"
+          type="number"
+          className="w-[49%]"
+          value={garlicFingersData.prices.medium}
+          onChange={(e) => handlePriceChange(e.target.value, "medium")}
+        />
+        <Input
+          placeholder="Large Garlic Fingers Price"
+          type="number"
+          className="w-[49%]"
+          value={garlicFingersData.prices.large}
+          onChange={(e) => handlePriceChange(e.target.value, "large")}
+        />
+        <Input
+          placeholder="Extra Large Garlic Fingers Price"
+          type="number"
+          className="w-[49%]"
+          value={garlicFingersData.prices.extralarge}
+          onChange={(e) => handlePriceChange(e.target.value, "extralarge")}
         />
       </div>
 
@@ -306,41 +288,26 @@ const PanzarottiForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all Panzarotti items from here
+          Manage your all garlic fingers items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allPanzarotti.map(
+          {allGarlicFingers.map(
             (item, index) =>
               item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
 
-                  <h4 className="text-[20px] mt-3 text-p-red font-semibold capitalize ">
-                    {item.toppings.length} Toppings
+                  <h4 className="text-[20px] text-p-red mt-3 font-semibold capitalize ">
+                    {item.description}
                   </h4>
-                  <p className="text-[12px] text-p-brown">{item.description}</p>
-                  {item.toppings.length !== 0 && (
-                    <div className="">
-                      <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                        Toppings
-                      </h4>
-                      <ul className="flex flex-wrap gap-3">
-                        {item.toppings.map((item, index) => (
-                          <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                   <div className="">
-                    <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
+                    <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
                       Comes With
                     </h4>
                     <ul className="flex flex-wrap gap-3">
-                      {item.comesWith.map((item, index) => (
+                      {item.comesWith.map((comesWithItem, index) => (
                         <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                          {item}
+                          {comesWithItem}
                         </li>
                       ))}
                     </ul>
@@ -350,14 +317,28 @@ const PanzarottiForm = () => {
                       Prices (CAD)
                     </h4>
                     <ul>
-                      <li className="text-p-brown">{item.prices}</li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Small:</span>{" "}
+                        {item.prices.small}
+                      </li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Medium:</span>{" "}
+                        {item.prices.medium}
+                      </li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Large:</span>{" "}
+                        {item.prices.large}
+                      </li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Extra Large:</span>{" "}
+                        {item.prices.extralarge}
+                      </li>
                     </ul>
                   </div>
                   <div className="text-end">
                     <small className="font-semibold text-p-brown">
                       Created: {formatDateTime(item.createdAt)}
-                    </small>
-                    <br />
+                    </small><br />
                     <small className="font-semibold text-p-brown">
                       Last Update: {formatDateTime(item.updatedAt)}
                     </small>
@@ -411,4 +392,4 @@ const PanzarottiForm = () => {
   );
 };
 
-export default PanzarottiForm;
+export default GarlicFingersForm;
