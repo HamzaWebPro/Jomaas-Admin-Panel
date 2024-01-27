@@ -48,7 +48,7 @@ const GarlicFingersForm = () => {
   const handleSubmit = () => {
     axios
       .post(
-        "http://localhost:8000/api/v1/add-menu/garlicfingers",
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/garlicfingers",
         garlicFingersData
       )
       .then((res) => {
@@ -79,7 +79,7 @@ const GarlicFingersForm = () => {
 
   let handleDelete = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/deletegarlicfingers", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletegarlicfingers", {
         id: _id,
       })
       .then(() => {
@@ -90,7 +90,7 @@ const GarlicFingersForm = () => {
   let [allGarlicFingers, setAllGarlicFingers] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/v1/add-menu/getgarlicfingers")
+      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getgarlicfingers")
       .then((res) => {
         setAllGarlicFingers(res.data);
       });
@@ -154,7 +154,7 @@ const GarlicFingersForm = () => {
 
   let handleUpdate = () => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/updategarlicfingers", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updategarlicfingers", {
         id: editID,
         updatedGarlicFingers: garlicFingersData,
       })
@@ -186,7 +186,7 @@ const GarlicFingersForm = () => {
 
   let handleNotAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/garlicfingersstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/garlicfingersstatus", {
         id: _id,
         status: "not-available",
       })
@@ -197,7 +197,7 @@ const GarlicFingersForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/garlicfingersstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/garlicfingersstatus", {
         id: _id,
         status: "available",
       })
