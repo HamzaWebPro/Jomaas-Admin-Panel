@@ -283,9 +283,7 @@ const PoutineForm = () => {
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                     <img src={item.image} alt={item.name} />
-                    <h3 className="text-[20px] font-bold text-p-red">
-                      {index + 1}
-                    </h3>
+                    
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
                       {item.name}
                     </h4>

@@ -211,7 +211,7 @@ const GarlicFingersForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your garlic fingers item - {editItem.description}
+          Update your garlic fingers item - Garlic Fingers
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
@@ -298,7 +298,7 @@ const GarlicFingersForm = () => {
                   <img src={item.image} className="w-full h-auto" />
 
                   <h4 className="text-[20px] text-p-red mt-3 font-semibold capitalize ">
-                    {item.description}
+                    Garlic Fingers
                   </h4>
                   <div className="">
                     <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">

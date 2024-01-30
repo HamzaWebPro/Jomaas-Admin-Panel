@@ -10,65 +10,81 @@ import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
-const PanzarottiForm = () => {
-  let data = useSelector((state) => state);
-  let [branch, setBranch] = useState(
+const SpecialityPastaForm = () => {
+  const data = useSelector((state) => state);
+  const [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
-  let [updateButton, setUpdateButton] = useState(false);
-  const [panzarottiData, setPanzarottiData] = useState({
+  const [updateButton, setUpdateButton] = useState(false);
+  const [specialityPastaData, setSpecialityPastaData] = useState({
+    name: "",
     description: "",
     image: "",
-    toppings: [],
-    comesWith: [],
-    prices: "",
+    servedWith: [],
+    prices: {
+      medium: "",
+      large: "",
+    },
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
+  const servedWithOptions = ["GARLIC TOAST"];
+
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setPanzarottiData({ ...panzarottiData, [field]: value });
+    setSpecialityPastaData({ ...specialityPastaData, [field]: value });
+  };
+
+  const handlePriceChange = (value, size) => {
+    setUpdateButton(true);
+    setSpecialityPastaData({
+      ...specialityPastaData,
+      prices: {
+        ...specialityPastaData.prices,
+        [size]: value,
+      },
+    });
   };
 
   const handleSubmit = () => {
-    // Validate the form data here if needed
-
-    // Send data to the backend using Axios
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarotti",
-        panzarottiData
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/specialtypasta",
+        specialityPastaData
       )
       .then((res) => {
         if (
-          res.data.message === "Your Panzarotti Item Successfully Created!!"
+          res.data.message ===
+          "Your Specialty Pasta Item Successfully Created!!"
         ) {
           location.reload();
           toast.success(res.data.message);
-          setPanzarottiData({
+          setSpecialityPastaData({
+            name: "",
             description: "",
             image: "",
-            toppings: [],
-            comesWith: [],
-            prices: "",
-            branch: data.userData.userInfo && data.userData.userInfo.branchName,
+            servedWith: [],
+            prices: {
+              medium: "",
+              large: "",
+            },
+            branch:
+              data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
         }
-        // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding panzarotti:", error);
-        toast.error("Error adding panzarotti. Please try again.");
+        console.error("Error adding speciality pasta:", error);
+        toast.error("Error adding speciality pasta. Please try again.");
       });
   };
 
-  // delete panzarotti function
-  let handleDelete = (_id) => {
+  const handleDelete = (_id) => {
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/deletepanzarotti",
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/deletespecialtypasta",
         {
           id: _id,
         }
@@ -78,16 +94,17 @@ const PanzarottiForm = () => {
       });
   };
 
-  // get all panzarotti
-  let [allPanzarotti, setAllPanzarotti] = useState([]);
+  const [allSpecialityPastas, setAllSpecialityPastas] = useState([]);
   useEffect(() => {
     axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getpanzarotti")
+      .get(
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/getspecialtypastas"
+      )
       .then((res) => {
-        setAllPanzarotti(res.data);
+        setAllSpecialityPastas(res.data);
       });
   }, []);
-  //   date format function
+
   const formatDateTime = (createdAt) => {
     const options = {
       year: "numeric",
@@ -100,127 +117,91 @@ const PanzarottiForm = () => {
     return new Date(createdAt).toLocaleDateString(undefined, options);
   };
 
-  // comesWith array
-  const comesWith = ["MARINARA SAUCE"];
-  
-  const toppings = [
-    "HAM",
-    "SALAMI",
-    "PEPPERONI",
-    "BACON",
-    "GROUND BEEF",
-    "SAUSAGE",
-    "EXTRA CHEESE",
-    "FETA CHEESE",
-    "ROASTED GARLIC",
-    "CHEDDAR",
-    "PINEAPPLE",
-    "GREEN PEPPERS",
-    "FRESH TOMATOES",
-    "COOKED TOMATOES",
-    "HOT BANANA PEPPERS",
-    "ONIONS",
-    "RED ONIONS",
-    "BLACK OLIVES",
-    "GREEN OLIVES",
-    "MUSHROOM",
-    "SPINACH",
-    "JALAPENO",
-    "SHRIMP",
-    "CRAB",
-    "CHICKEN",
-    "DONAIR MEAT",
-    "BBQ SAUCE",
-    "CHICKEN BREAST",
-    "SWEET SAUCE",
-    "WHITE SAUCE",
-    "HOT SAUCE",
-    "SALSA SAUCE BASE",
-    "SUN DRIED TOMATOES",
-    "SOUR CREAM",
-    "BLUE CHEESE",
-    "GARLIC BUTTER BASE",
-    "PESTO SAUCE BASE"
-    
-  ];
+  const [edit, setEdit] = useState(false);
+  const [editID, setEditID] = useState("");
+  const [editItem, setEditItem] = useState();
 
-  // edit functionalities
-  let [edit, setEdit] = useState(false);
-  let [editID, setEditID] = useState("");
-  let [editItem, setEditItem] = useState();
-  let handleEdit = (item, index) => {
+  const handleEdit = (item, index) => {
     setUpdateButton(false);
     setEdit(true);
     setEditID(item._id);
     setEditItem(item);
 
-    // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setPanzarottiData({
+    setSpecialityPastaData({
+      name: item.name,
       description: item.description,
       image: item.image,
-      toppings: item.toppings,
-      comesWith: item.comesWith,
-      prices: item.prices,
+      servedWith: item.servedWith,
+      prices: {
+        medium: item.prices.medium,
+        large: item.prices.large,
+      },
     });
   };
 
-  let handleCancelEdit = () => {
+  const handleCancelEdit = () => {
     setUpdateButton(false);
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setPanzarottiData({
+    setSpecialityPastaData({
+      name: "",
       description: "",
       image: "",
-      toppings: [],
-      comesWith: [],
-      prices: "",
+      servedWith: [],
+      prices: {
+        medium: "",
+        large: "",
+      },
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the panzarotti data from the database
-  let handleUpdate = () => {
+  const handleUpdate = () => {
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/updatepanzarotti",
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/updatespecialtypasta",
         {
           id: editID,
-          updatedPanzarotti: panzarottiData,
+          updatedSpecialtyPasta: specialityPastaData,
         }
       )
       .then((res) => {
         if (
-          res.data.message === "Your Panzarotti Item Successfully Updated!!"
+          res.data.message ===
+          "Your Specialty Pasta Item Successfully Updated!!"
         ) {
           location.reload();
           toast.success(res.data.message);
-          setPanzarottiData({
+          setSpecialityPastaData({
+            name: "",
             description: "",
             image: "",
-            toppings: [],
-            comesWith: [],
-            prices: "",
-            branch: data.userData.userInfo && data.userData.userInfo.branchName,
+            servedWith: [],
+            prices: {
+              medium: "",
+              large: "",
+            },
+            branch:
+              data.userData.userInfo && data.userData.userInfo.branchName,
           });
         } else {
           toast.error(res.data.message);
         }
-        // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error updating Panzarotti:", error);
-        toast.error("Error updating Panzarotti. Please try again.");
+        console.error("Error updating speciality pasta:", error);
+        toast.error("Error updating speciality pasta. Please try again.");
       });
   };
 
-  // panzarotti available status functionality
-  let handleNotAvailable = (_id) => {
+   // panzarotti available status functionality
+   let handleNotAvailable = (_id) => {
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus",
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/specialtypastastatus",
         {
           id: _id,
           status: "not-available",
@@ -234,7 +215,7 @@ const PanzarottiForm = () => {
   let handleAvailable = (_id) => {
     axios
       .post(
-        "https://jomaas-backend.onrender.com/api/v1/add-menu/panzarottistatus",
+        "https://jomaas-backend.onrender.com/api/v1/add-menu/specialtypastastatus",
         {
           id: _id,
           status: "available",
@@ -250,56 +231,57 @@ const PanzarottiForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your Panzarotti item - {editItem.toppings.length } Toppings
+          Update your speciality pasta item - {editItem.name}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your Panzarotti items
+          Add your speciality pasta items
         </h3>
       )}
       <Input
-        placeholder="Panzarotti Description"
-        value={panzarottiData.description}
+        placeholder="Speciality Pasta Name"
+        value={specialityPastaData.name}
+        onChange={(e) => handleChange(e.target.value, "name")}
+      />
+      <Input
+        placeholder="Speciality Pasta Description"
+        value={specialityPastaData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={panzarottiData.image}
+        value={specialityPastaData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
       <Select
         mode="tags"
         style={{ width: "100%" }}
-        placeholder="Toppings"
-        onChange={(value) => handleChange(value, "toppings")}
-        value={panzarottiData.toppings}
+        placeholder="Served With"
+        onChange={(value) => handleChange(value, "servedWith")}
+        value={specialityPastaData.servedWith}
       >
-        {toppings.map((item) => (
+        {servedWithOptions.map((item) => (
           <Option key={item} value={item}>
             {item}
           </Option>
         ))}
-      </Select>
-      <Select
-        mode="tags"
-        style={{ width: "100%" }}
-        placeholder="Comes with"
-        onChange={(value) => handleChange(value, "comesWith")}
-        value={panzarottiData.comesWith}
-      >
-        {comesWith.map((item) => (
-          <Option key={item} value={item}>
-            {item}
-          </Option>
-        ))}
+        {/* Add options for "Served With" here */}
       </Select>
       <p className="text-p-red">Add Prices (CAD)</p>
       <div className="flex flex-wrap gap-1">
         <Input
-          placeholder="Panzarotti Price"
+          placeholder="Medium Speciality Pasta Price"
           type="number"
-          value={panzarottiData.prices}
-          onChange={(e) => handleChange(e.target.value, "prices")}
+          className="w-[49%]"
+          value={specialityPastaData.prices.medium}
+          onChange={(e) => handlePriceChange(e.target.value, "medium")}
+        />
+        <Input
+          placeholder="Large Speciality Pasta Price"
+          type="number"
+          className="w-[49%]"
+          value={specialityPastaData.prices.large}
+          onChange={(e) => handlePriceChange(e.target.value, "large")}
         />
       </div>
 
@@ -317,41 +299,27 @@ const PanzarottiForm = () => {
       </div>
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all Panzarotti items from here
+          Manage your all speciality pasta items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allPanzarotti.map(
+          {allSpecialityPastas.map(
             (item, index) =>
               item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
 
-                  <h4 className="text-[20px] mt-3 text-p-red font-semibold capitalize ">
-                    {item.toppings.length} Toppings
+                  <h4 className="text-[20px] text-p-red mt-3 font-semibold capitalize ">
+                    {item.name}
                   </h4>
-                  <p className="text-[12px] text-p-brown">{item.description}</p>
-                  {item.toppings.length !== 0 && (
-                    <div className="">
-                      <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                        Toppings
-                      </h4>
-                      <ul className="flex flex-wrap gap-3">
-                        {item.toppings.map((item, index) => (
-                          <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  <small className="text-p-brown">{item.description}</small>
                   <div className="">
-                    <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
-                      Comes With
+                    <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
+                      Served With
                     </h4>
                     <ul className="flex flex-wrap gap-3">
-                      {item.comesWith.map((item, index) => (
+                      {item.servedWith.map((servedWithItem, index) => (
                         <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
-                          {item}
+                          {servedWithItem}
                         </li>
                       ))}
                     </ul>
@@ -361,7 +329,14 @@ const PanzarottiForm = () => {
                       Prices (CAD)
                     </h4>
                     <ul>
-                      <li className="text-p-brown">{item.prices}</li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Medium:</span>{" "}
+                        {item.prices.medium}
+                      </li>
+                      <li className="text-p-brown">
+                        <span className="font-semibold">Large:</span>{" "}
+                        {item.prices.large}
+                      </li>
                     </ul>
                   </div>
                   <div className="text-end">
@@ -422,4 +397,4 @@ const PanzarottiForm = () => {
   );
 };
 
-export default PanzarottiForm;
+export default SpecialityPastaForm;

@@ -120,7 +120,7 @@ const PizzaForm = () => {
     "GROUND BEEF",
     "SAUSAGE",
     "EXTRA CHEESE",
-    "FETA",
+    "FETA CHEESE",
     "ROASTED GARLIC",
     "CHEDDAR",
     "PINEAPPLE",
@@ -141,6 +141,16 @@ const PizzaForm = () => {
     "DONAIR MEAT",
     "BBQ SAUCE",
     "CHICKEN BREAST",
+    "SWEET SAUCE",
+    "WHITE SAUCE",
+    "HOT SAUCE",
+    "SALSA SAUCE BASE",
+    "SUN DRIED TOMATOES",
+    "SOUR CREAM",
+    "BLUE CHEESE",
+    "GARLIC BUTTER BASE",
+    "PESTO SAUCE BASE"
+    
   ];
 
   //   date format function
@@ -250,7 +260,7 @@ const PizzaForm = () => {
 
   let handleNotAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/pizzastatus", {
         id: _id,
         status: "not-available",
       })
@@ -261,7 +271,7 @@ const PizzaForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("http://localhost:8000/api/v1/add-menu/pizzastatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/pizzastatus", {
         id: _id,
         status: "available",
       })

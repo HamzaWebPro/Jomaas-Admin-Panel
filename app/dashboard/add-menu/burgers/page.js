@@ -104,7 +104,7 @@ const BurgerForm = () => {
   };
 
   // Toppings array
-  const toppings = ["TOPPING_1", "TOPPING_2", "TOPPING_3"]; // Replace with your actual toppings
+  const toppings = ["LETUCE", "ONIONS", "TOMATOES","PICKLES","MAYO","KECHUP"]; // Replace with your actual toppings
 
   // Edit functionalities
   let [edit, setEdit] = useState(false);
