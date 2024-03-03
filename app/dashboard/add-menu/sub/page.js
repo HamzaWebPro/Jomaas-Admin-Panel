@@ -12,25 +12,40 @@ import { InfinitySpin } from "react-loader-spinner";
 
 const { Option } = Select;
 
-const ChickenForm = () => {
+const SubForm = () => {
   let data = useSelector((state) => state);
   let [branch, setBranch] = useState(
     data.userData.userInfo && data.userData.userInfo.branchName
   );
   let [updateButton, setUpdateButton] = useState(false);
-  const [chickenData, setChickenData] = useState({
+  const toppings = ["MAYO", "MUSTARD","SWEET SAUCE","GARLIC","SOUR CREAM","TZATZIKI"];
+  const servedWith = [
+    "SALAMI",
+    "CHEESE",
+    "LETTUCE",
+    "TOMATO",
+    "ONIONS",
+    "HAM",
+    "TURKEY CHEESE",
+    "PEPPERONI",
+    "DONAIR",
+    "PIZZA SAUCE",
+    "COOCKED ONIONS",
+    "PINEAPPLE",
+  ];
+  const [subData, setSubData] = useState({
     name: "",
     description: "",
     image: "",
-    pieces: "",
-    comesWith: [],
+    servedWith: [],
+    toppings: [],
     prices: "",
     branch: data.userData.userInfo && data.userData.userInfo.branchName,
   });
 
   const handleChange = (value, field) => {
     setUpdateButton(true);
-    setChickenData({ ...chickenData, [field]: value });
+    setSubData({ ...subData, [field]: value });
   };
 
   const handleSubmit = () => {
@@ -38,17 +53,17 @@ const ChickenForm = () => {
 
     // Send data to the backend using Axios
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickens", chickenData)
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/sub", subData)
       .then((res) => {
-        if (res.data.message === "Your Chicken Item Successfully Created!!") {
+        if (res.data.message === "Your Sub Item Successfully Created!!") {
           location.reload();
           toast.success(res.data.message);
-          setChickenData({
+          setSubData({
             name: "",
             description: "",
             image: "",
-            pieces: "",
-            comesWith: [],
+            servedWith: [],
+            toppings: [],
             prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
@@ -58,54 +73,29 @@ const ChickenForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error adding chicken:", error);
-        toast.error("Error adding chicken. Please try again.");
+        console.error("Error adding sub item:", error);
+        toast.error("Error adding sub item. Please try again.");
       });
   };
 
-  // delete chicken function
+  // Read sub items
+  let [allSubs, setAllSubs] = useState([]);
+  useEffect(() => {
+    axios.get("https://jomaas-backend.onrender.com/api/v1/add-menu/getsubs").then((res) => {
+      setAllSubs(res.data);
+    });
+  }, []);
+
+  // Delete sub item
   let handleDelete = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletechicken", {
-        id: _id,
-      })
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/deletesub", { id: _id })
       .then(() => {
         location.reload();
       });
   };
 
-  // get all chicken
-  let [allChicken, setAllChicken] = useState([]);
-  useEffect(() => {
-    axios
-      .get("https://jomaas-backend.onrender.com/api/v1/add-menu/getchickens")
-      .then((res) => {
-        setAllChicken(res.data);
-      });
-  }, []);
-
-  // comesWith array
-  const comesWith = [
-    "Gravy",
-    "Fries",
-    "Taters",
-    // Add other toppings as needed
-  ];
-
-  // date format function
-  const formatDateTime = (createdAt) => {
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    };
-    return new Date(createdAt).toLocaleDateString(undefined, options);
-  };
-
-  // edit functionalities
+  // Update or edit sub item
   let [edit, setEdit] = useState(false);
   let [editID, setEditID] = useState("");
   let [editItem, setEditItem] = useState();
@@ -118,12 +108,12 @@ const ChickenForm = () => {
     // Scroll to the top of the page
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    setChickenData({
+    setSubData({
       name: item.name,
       description: item.description,
       image: item.image,
-      pieces: item.pieces,
-      comesWith: item.comesWith,
+      servedWith: item.servedWith,
+      toppings: item.toppings,
       prices: item.prices,
     });
   };
@@ -133,34 +123,34 @@ const ChickenForm = () => {
     setEdit(false);
     setEditID("");
     setEditItem("");
-    setChickenData({
+    setSubData({
       name: "",
       description: "",
       image: "",
-      pieces: "",
-      comesWith: [],
+      servedWith: [],
+      toppings: [],
       prices: "",
       branch: data.userData.userInfo && data.userData.userInfo.branchName,
     });
   };
 
-  // update the chicken data from the database
+  // Update the sub data from the database
   let handleUpdate = () => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatechicken", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/updatesub", {
         id: editID,
-        updatedChicken: chickenData,
+        updatedSub: subData,
       })
       .then((res) => {
-        if (res.data.message === "Your Chicken Item Successfully Updated!!") {
+        if (res.data.message === "Your Sub Item Successfully Updated!!") {
           location.reload();
           toast.success(res.data.message);
-          setChickenData({
+          setSubData({
             name: "",
             description: "",
             image: "",
-            pieces: "",
-            comesWith: [],
+            servedWith: [],
+            toppings: [],
             prices: "",
             branch: data.userData.userInfo && data.userData.userInfo.branchName,
           });
@@ -170,15 +160,27 @@ const ChickenForm = () => {
         // Clear all fields after submission
       })
       .catch((error) => {
-        console.error("Error updating Chicken:", error);
-        toast.error("Error updating Chicken. Please try again.");
+        console.error("Error updating sub item:", error);
+        toast.error("Error updating sub item. Please try again.");
       });
   };
+  //   date format function
+  const formatDateTime = (createdAt) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(createdAt).toLocaleDateString(undefined, options);
+  };
 
-  // chicken available status functionality
+  // Sub available status functionality
   let handleNotAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickenstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/substatus", {
         id: _id,
         status: "not-available",
       })
@@ -189,7 +191,7 @@ const ChickenForm = () => {
 
   let handleAvailable = (_id) => {
     axios
-      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/chickenstatus", {
+      .post("https://jomaas-backend.onrender.com/api/v1/add-menu/substatus", {
         id: _id,
         status: "available",
       })
@@ -203,60 +205,63 @@ const ChickenForm = () => {
       <ToastContainer />
       {editItem ? (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Update your Chicken item - {editItem.pieces} {editItem.name} {editItem.comesWith.length === 0 ? "" : "(Combo)"}
+          Update your sub item - {editItem.name}
         </h3>
       ) : (
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Add your Chicken items
+          Add your sub items
         </h3>
       )}
       <Input
-        placeholder="Chicken Item Name"
-        value={chickenData.name}
+        placeholder="Sub Name"
+        value={subData.name}
         onChange={(e) => handleChange(e.target.value, "name")}
       />
       <Input.TextArea
-        placeholder="Chicken Description"
-        value={chickenData.description}
+        placeholder="Sub Description"
+        value={subData.description}
         onChange={(e) => handleChange(e.target.value, "description")}
       />
       <Input
         placeholder="Image URL"
-        value={chickenData.image}
+        value={subData.image}
         onChange={(e) => handleChange(e.target.value, "image")}
       />
-      
-     <div className="">
-      <small className="text-p-red">You can skip Comes with items if you dont want to make combo</small>
-     <Select
+      <Select
         mode="tags"
         style={{ width: "100%" }}
-        placeholder="Comes with"
-        onChange={(value) => handleChange(value, "comesWith")}
-        value={chickenData.comesWith}
+        placeholder="Served With"
+        onChange={(value) => handleChange(value, "servedWith")}
+        value={subData.servedWith}
       >
-        {comesWith.map((item) => (
+        {servedWith.map((item) => (
           <Option key={item} value={item}>
             {item}
           </Option>
         ))}
       </Select>
-     </div>
-      <Input
-        placeholder="Pieces"
-        type="number"
-        value={chickenData.pieces}
-        onChange={(e) => handleChange(e.target.value, "pieces")}
-      />
-      <p className="text-p-red">Add Prices (CAD)</p>
-      <div className="flex flex-wrap gap-1">
-        <Input
-          placeholder="Chicken Price"
-          type="number"
-          value={chickenData.prices}
-          onChange={(e) => handleChange(e.target.value, "prices")}
-        />
+      <div className="">
+      <small className="text-p-red">You can skip Topped With items if you dont want to serve anything on top of your sub.</small>
+      <Select
+        mode="tags"
+        style={{ width: "100%" }}
+        placeholder="Topped With"
+        onChange={(value) => handleChange(value, "toppings")}
+        value={subData.toppings}
+      >
+        {toppings.map((item) => (
+          <Option key={item} value={item}>
+            {item}
+          </Option>
+        ))}
+      </Select>
       </div>
+      <Input
+        placeholder="Prices (CAD)"
+        type="number"
+        value={subData.prices}
+        onChange={(e) => handleChange(e.target.value, "prices")}
+      />
 
       <div className="flex justify-center">
         {edit ? (
@@ -270,39 +275,59 @@ const ChickenForm = () => {
           <CommonButton title={"Submit"} onClick={handleSubmit} />
         )}
       </div>
+
       <div className="mt-10 w-full">
         <h3 className="text-center uppercase font-semibold text-p-brown text-[18px] py-4">
-          Manage your all Chicken items from here
+          Manage all your sub items from here
         </h3>
         <div className="mt-5 w-full flex justify-center flex-wrap flex-col-reverse md:flex-row gap-5">
-          {allChicken.map(
+          {allSubs.map(
             (item, index) =>
               item.branch === branch && (
                 <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                   <img src={item.image} className="w-full h-auto" />
-                  <h4 className="text-[20px] text-p-red font-semibold capitalize ">
-                   {item.pieces} {item.name} {item.comesWith.length === 0 ? "" : "(Combo)"}
+
+                  <h4 className="text-[20px] text-p-red mt-3 font-semibold capitalize ">
+                    {item.name}
                   </h4>
                   <p className="text-[12px] text-p-brown">{item.description}</p>
-                 
-                 {item.comesWith.length !== 0 && <div className="">
+                  <div className="">
                     <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
-                      Comes With
+                      Served With
                     </h4>
                     <ul className="flex flex-wrap gap-3">
-                      {item.comesWith.map((item, index) => (
+                      {item.servedWith.map((item, index) => (
                         <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
                           {item}
                         </li>
                       ))}
                     </ul>
-                  </div>}
+                  </div>
+                  {item.toppings.length === 0 || !item.toppings ? (
+                    ""
+                  ) : (
+                    <div className="">
+                      <h4 className="text-[17px] mb-2 text-p-red font-semibold capitalize ">
+                        Topped With
+                      </h4>
+                      <ul className="flex flex-wrap gap-3">
+                        {item.toppings.map((item, index) => (
+                          <li className="p-1 rounded-lg text-[10px] text-white bg-green-700">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                   <div className="">
                     <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                       Prices (CAD)
                     </h4>
                     <ul>
-                      <li className="text-p-brown">{item.prices}</li>
+                      <li className="text-p-brown">
+                        
+                        {item.prices}
+                      </li>
                     </ul>
                   </div>
                   <div className="text-end">
@@ -363,4 +388,4 @@ const ChickenForm = () => {
   );
 };
 
-export default ChickenForm;
+export default SubForm;

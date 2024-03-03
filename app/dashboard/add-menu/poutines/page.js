@@ -283,7 +283,7 @@ const PoutineForm = () => {
                 item.branch === branch && (
                   <div className="w-full p-3 md:w-[32%] bg-p-yellow flex flex-col gap-y-3">
                     <img src={item.image} alt={item.name} />
-                    
+
                     <h4 className="text-[20px] text-p-red font-semibold capitalize ">
                       {item.name}
                     </h4>
@@ -294,11 +294,13 @@ const PoutineForm = () => {
                       <h4 className="text-[17px]  text-p-red font-semibold capitalize ">
                         Price (CAD)
                       </h4>
-                      <p className="text-p-brown font-semibold">
-                        Medium: {item.prices.medium}
+                      <p className="text-p-brown ">
+                        <span className="font-semibold">Medium:</span>
+                        {item.prices.medium}
                       </p>
-                      <p className="text-p-brown font-semibold">
-                        Large: {item.prices.large}
+                      <p className="text-p-brown ">
+                        <span className="font-semibold">Large:</span>
+                        {item.prices.large}
                       </p>
                     </div>
                     <div className="text-end">
