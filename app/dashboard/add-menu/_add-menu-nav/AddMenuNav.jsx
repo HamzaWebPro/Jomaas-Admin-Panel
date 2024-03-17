@@ -12,6 +12,10 @@ const AddMenuNav = () => {
       path: "/dashboard/add-menu/pizza",
     },
     {
+      navitem: "2 for 1 Pizzas",
+      path: "/dashboard/add-menu/two-for-one-pizzas",
+    },
+    {
       navitem: "Donair",
       path: "/dashboard/add-menu/donair",
     },

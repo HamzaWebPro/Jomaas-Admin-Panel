@@ -85,7 +85,7 @@ const DonairForm = () => {
   }, []);
 
   // topping array
-  const toppings = ["SWEET SAUCE", "SOUR CREAM", "TZATZIKI", "GARLIC SAUCE"];
+  const toppings = ["LETTUCE", "TOMATOES", "ONIONS"];
 
   // date format function
   const formatDateTime = (createdAt) => {

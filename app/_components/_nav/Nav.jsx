@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from "../../_svg/logo.svg";
 import { MdOutlinePendingActions } from "react-icons/md";
-import { GiConfirmed } from "react-icons/gi";
+import { GiConfirmed, GiDeliveryDrone } from "react-icons/gi";
 import { MdRestaurantMenu } from "react-icons/md";
 import { RiAddBoxLine } from "react-icons/ri";
 import { FaUsers } from "react-icons/fa";
@@ -41,6 +41,11 @@ const Nav = () => {
       navitem: "Customers",
       icon: <FaUsers />,
       path: "/dashboard/customers",
+    },
+    {
+      navitem: "Manage Delivery Man",
+      icon: <GiDeliveryDrone />,
+      path: "/dashboard/deliveryman",
     },
   ];
   const [isScrolled, setIsScrolled] = useState(true);
