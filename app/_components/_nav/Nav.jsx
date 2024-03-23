@@ -47,6 +47,7 @@ const Nav = () => {
       icon: <GiDeliveryDrone />,
       path: "/dashboard/deliveryman",
     },
+    
   ];
   const [isScrolled, setIsScrolled] = useState(true);
 

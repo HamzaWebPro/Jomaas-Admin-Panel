@@ -67,6 +67,10 @@ const AddMenuNav = () => {
       navitem: "Beverages",
       path: "/dashboard/add-menu/beverages",
     },
+    {
+      navitem: "Sauce",
+      path: "/dashboard/add-menu/sauce",
+    },
   ];
 
   return (
