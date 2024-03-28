@@ -31,7 +31,7 @@ const page = () => {
     return (
         <div className="pt-[80px] p-[10px] w-full">
             <div className="customerOrder-head">
-                <h2 className='text-3xl font-bold text-center mt-5 text-p-red'>Customer</h2>
+                <h2 className='text-3xl font-bold text-center mt-5 text-p-red'>Customers</h2>
             </div>
 
             <div className="w-full customer-search mt-[40px] pb-[30px] flex justify-end items-center">

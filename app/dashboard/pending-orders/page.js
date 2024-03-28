@@ -14,6 +14,7 @@ const page = () => {
 
     const handleButtonClick = (index) => {
         setClickedIndex(index);
+        setCloseAcceptBtn(t)
       };
 
     const generateData = () => {
@@ -66,7 +67,7 @@ const page = () => {
                                         <FaCheck className='font-semibold text-[18px]' />
                                     </button>
                                     {
-                                    clickedIndex  && closeAcceptBtn == true
+                                    clickedIndex === index  && closeAcceptBtn == true
                                     ?
                                     <div className="inner-button bg-[#f1f1f1] p-[10px] rounded-lg absolute top-[22px] left-[50%] translate-x-[-50%] flex flex-col jutify-center items-center gap-2 mt-[20px]">
                                         <button className='px-[30px] py-[5px] rounded-lg bg-blue-500 text-white font-semibold text-[18px] cursor-pointer'>1</button>
